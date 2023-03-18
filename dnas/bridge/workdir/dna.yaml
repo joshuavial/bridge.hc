@@ -3,7 +3,9 @@ manifest_version: "1"
 name: bridge
 integrity:
   network_seed: ~
-  properties: ~
+  properties:
+    progenitor_eth_address: 3432143
+    percentage_for_consensus: 51
   origin_time: 1679169690399947
   zomes:
     - name: bridge_integrity

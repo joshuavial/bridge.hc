@@ -9,6 +9,7 @@ name = "bridge_integrity"
 
 [dependencies]
 hdi = { workspace = true }
+hdk = { workspace = true }
 
 serde = { workspace = true }
 web3 = "0.18.0"

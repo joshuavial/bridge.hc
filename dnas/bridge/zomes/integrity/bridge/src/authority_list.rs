@@ -7,6 +7,7 @@ pub struct AuthorityList {
     pub percentage_for_consensus: u32,
     pub authorities: Vec<(AgentPubKey, Address)>,
 }
+
 pub fn validate_create_authority_list(
     _action: EntryCreationAction,
     _authority_list: AuthorityList,
