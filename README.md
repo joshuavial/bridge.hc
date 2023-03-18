@@ -30,11 +30,11 @@ Entries
     - if cross-chain and updated then add cross-chain refrence countersigned by x% of authorities
   
 - AuthorityList 
- - list of authorities (holo_pubkey, eth_pubkey)
- - initial list provided by the properties of the dht
+  - list of authorities (holo_pubkey, eth_pubkey)
+  - initial list provided by the properties of the dht
  
- - validations
-  - at least 50% sign an update to the list
+  - validations
+    - at least 50% sign an update to the list
   
 - ChainList
   - array of bdige_contracts (id of chain (1 for Ethereum, 2 for Optimism (or whatever) etc.) (maybe use Eth chain ids) - can use for building a testnet dht + contract address)
