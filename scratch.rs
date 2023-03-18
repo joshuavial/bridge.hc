@@ -15,5 +15,10 @@ struct AuthorityList {
 }
 
 //  need validation for:
-//  - percentage for consensus must be at least 50%
+// done //  - percentage for consensus must be at least 50%
 //  - authorities list must be of a minimum length
+
+
+
+// Build functionality for adding new agents to the authoritylist
+

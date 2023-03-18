@@ -1,4 +1,4 @@
-use hdk::prelude::*;
+use hdi::prelude::*;
 use serde::{Deserialize, Serialize};
 use web3::types::Address;
 

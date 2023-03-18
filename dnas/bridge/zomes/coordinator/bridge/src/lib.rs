@@ -6,9 +6,27 @@ use hdk::prelude::*;
 #[hdk_extern]
 pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
     let my_agent_key = agent_info()?.agent_latest_pubkey;
-    let my_eth_address = Properties::try_from(dna_info()?.properties);
+    let properties = Properties::try_from(dna_info()?.properties).map_err(|_| {
+        wasm_error!(WasmErrorInner::Guest(
+            "Could not deserialize properties".into()
+        ))
+    })?;
 
-    Ok(InitCallbackResult::Pass)
+    let my_eth_address = properties.progenitor_eth_address;
+    let percentage: u32 = properties.percentage_for_consensus;
+    match percentage {
+        x if x > 50 && x <= 100 => {
+            create_entry(EntryTypes::AuthorityList(AuthorityList {
+                percentage_for_consensus: percentage,
+                authorities: vec![(my_agent_key, my_eth_address)],
+            }))?;
+
+            Ok(InitCallbackResult::Pass)
+        }
+        _ => Ok(InitCallbackResult::Fail(
+            "Percentage for consensus was invalid".into(),
+        )),
+    }
 }
 // Don't modify this enum if you want the scaffolding tool to generate appropriate signals for your entries and links
 #[derive(Serialize, Deserialize, Debug)]
