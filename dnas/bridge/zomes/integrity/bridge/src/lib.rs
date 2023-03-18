@@ -4,6 +4,9 @@ pub use authority_list::*;
 pub mod properties;
 pub use properties::*;
 
+pub mod transaction;
+pub use transaction::*;
+
 use hdi::prelude::*;
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "type")]
@@ -11,6 +14,7 @@ use hdi::prelude::*;
 #[unit_enum(UnitEntryTypes)]
 pub enum EntryTypes {
     AuthorityList(AuthorityList),
+    Transaction(Transaction),
 }
 // Validation you perform during the genesis process. Nobody else on the network performs it, only you.
 // There *is no* access to network calls in this callback
@@ -55,6 +59,9 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                     EntryCreationAction::Create(action),
                     authority_list,
                 ),
+                EntryTypes::Transaction(transaction) => {
+                    validate_create_transaction(EntryCreationAction::Create(action), transaction)
+                }
             },
             OpEntry::UpdateEntry {
                 app_entry, action, ..
@@ -63,6 +70,9 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                     EntryCreationAction::Update(action),
                     authority_list,
                 ),
+                EntryTypes::Transaction(transaction) => {
+                    validate_create_transaction(EntryCreationAction::Update(action), transaction)
+                }
             },
             _ => Ok(ValidateCallbackResult::Valid),
         },
@@ -97,6 +107,9 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                 EntryTypes::AuthorityList(authority_list) => {
                     validate_delete_authority_list(action, original_action, authority_list)
                 }
+                EntryTypes::Transaction(transaction) => {
+                    validate_delete_transaction(action, original_action, transaction)
+                }
             },
             _ => Ok(ValidateCallbackResult::Valid),
         },
@@ -128,6 +141,10 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                     EntryTypes::AuthorityList(authority_list) => validate_create_authority_list(
                         EntryCreationAction::Create(action),
                         authority_list,
+                    ),
+                    EntryTypes::Transaction(transaction) => validate_create_transaction(
+                        EntryCreationAction::Create(action),
+                        transaction,
                     ),
                 },
                 // Complementary validation to the `RegisterUpdate` Op, in which the record itself is validated
@@ -184,6 +201,8 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                                 Ok(result)
                             }
                         }
+
+                        EntryTypes::Transaction(transaction) => Ok(ValidateCallbackResult::Valid),
                     }
                 }
                 // Complementary validation to the `RegisterDelete` Op, in which the record itself is validated
@@ -248,6 +267,13 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                                 action,
                                 original_action,
                                 original_authority_list,
+                            )
+                        }
+                        EntryTypes::Transaction(original_transaction) => {
+                            validate_delete_transaction(
+                                action,
+                                original_action,
+                                original_transaction,
                             )
                         }
                     }
