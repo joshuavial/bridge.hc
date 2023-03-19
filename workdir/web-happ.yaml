@@ -1,7 +1,7 @@
 ---
 manifest_version: "1"
-name: brige.hc
+name: bridge.hc
 ui:
   bundled: "../ui/dist.zip"
 happ_manifest:
-  bundled: "./brige.hc.happ"
+  bundled: "./bridge.hc.happ"

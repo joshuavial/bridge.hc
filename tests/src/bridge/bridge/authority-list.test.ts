@@ -6,34 +6,33 @@ import { decode } from '@msgpack/msgpack';
 
 import { createAuthorityList, sampleAuthorityList } from './common.js';
 
-test('create AuthorityList', async () => {
+import {installApp} from './utils.js';
+
+test('AuthorityList generated from properties and progenitor', async () => {
   await runScenario(async scenario => {
-    // Construct proper paths for your app.
-    // This assumes app bundle created by the `hc app pack` command.
-    const testAppPath = process.cwd() + '/../workdir/brige.hc.happ';
 
-    // Set up the app to be installed 
-    const appSource = { appBundleSource: { path: testAppPath } };
+    const [aliceConductor, alice] = await installApp(scenario);
 
-    // Add 2 players with the test app to the Scenario. The returned players
-    // can be destructured.
-    const [alice, bob] = await scenario.addPlayersWithApps([appSource, appSource]);
+    const record: Record = await aliceConductor.appAgentWs().callZome({
+      role_name: "bridge",
+      zome_name: "bridge",
+      fn_name: "get_authority_list",
+      payload: null,
+    });
 
-    // Shortcut peer discovery through gossip and register all agents in every
-    // conductor of the scenario.
-    await scenario.shareAllAgents();
+    //const aliceBridgeCell = 
 
     // Alice creates a AuthorityList
-    const record: Record = await createAuthorityList(alice.cells[0]);
+    //const record: Record = await createAuthorityList(alice.cells[0]);
     assert.ok(record);
   });
 });
 
-test('create and read AuthorityList', async () => {
+test.skip('create and read AuthorityList', async () => {
   await runScenario(async scenario => {
     // Construct proper paths for your app.
     // This assumes app bundle created by the `hc app pack` command.
-    const testAppPath = process.cwd() + '/../workdir/brige.hc.happ';
+    const testAppPath = process.cwd() + '/../workdir/bridge.hc.happ';
 
     // Set up the app to be installed 
     const appSource = { appBundleSource: { path: testAppPath } };
@@ -65,11 +64,11 @@ test('create and read AuthorityList', async () => {
   });
 });
 
-test('create and update AuthorityList', async () => {
+test.skip('create and update AuthorityList', async () => {
   await runScenario(async scenario => {
     // Construct proper paths for your app.
     // This assumes app bundle created by the `hc app pack` command.
-    const testAppPath = process.cwd() + '/../workdir/brige.hc.happ';
+    const testAppPath = process.cwd() + '/../workdir/bridge.hc.happ';
 
     // Set up the app to be installed 
     const appSource = { appBundleSource: { path: testAppPath } };

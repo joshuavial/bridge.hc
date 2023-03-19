@@ -1,11 +1,11 @@
 use hdi::prelude::*;
-use web3::types::Address;
+//use web3::types::Address;
 
 #[hdk_entry_helper]
 #[derive(Clone, PartialEq)]
 pub struct AuthorityList {
     pub percentage_for_consensus: u32,
-    pub authorities: Vec<(AgentPubKey, Address)>,
+    pub authorities: Vec<(AgentPubKey, String)>,
 }
 
 pub fn validate_create_authority_list(
