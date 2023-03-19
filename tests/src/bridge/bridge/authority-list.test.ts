@@ -13,6 +13,15 @@ test('AuthorityList generated from properties and progenitor', async () => {
 
     const [aliceConductor, alice] = await installApp(scenario);
 
+    const record1: Record = await aliceConductor.appAgentWs().callZome({
+      role_name: "bridge",
+      zome_name: "bridge",
+      fn_name: "whoami",
+      payload: null,
+    });
+
+    await pause(1200);
+
     const record: Record = await aliceConductor.appAgentWs().callZome({
       role_name: "bridge",
       zome_name: "bridge",

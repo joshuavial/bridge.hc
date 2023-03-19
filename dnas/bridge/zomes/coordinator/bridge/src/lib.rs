@@ -1,10 +1,14 @@
 pub mod authority_list;
+pub mod utils;
+
 use bridge_integrity::*;
 use hdk::prelude::*;
 
 // Called the first time a zome call is made to the cell containing this zome
 #[hdk_extern]
 pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
+    //TODO behave differently for progenitor vs anyone joining
+
     let my_agent_key = agent_info()?.agent_latest_pubkey;
     let properties = Properties::try_from(dna_info()?.properties).map_err(|_| {
         wasm_error!(WasmErrorInner::Guest(
@@ -14,6 +18,8 @@ pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
 
     let my_eth_address = properties.progenitor_eth_address;
     let percentage: u32 = properties.percentage_for_consensus;
+
+    //TODO move to proper validation
     match percentage {
         x if x > 50 && x <= 100 => {
             create_entry(EntryTypes::AuthorityList(AuthorityList {
@@ -28,6 +34,17 @@ pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
         )),
     }
 }
+
+#[hdk_extern]
+pub fn whoami(_: ()) -> ExternResult<AgentPubKey> {
+    Ok(agent_info().unwrap().agent_initial_pubkey)
+}
+
+#[hdk_extern]
+pub fn get_authority_list(_: ()) -> ExternResult<Record> {
+    authority_list::handle_get_authority_list()
+}
+
 // Don't modify this enum if you want the scaffolding tool to generate appropriate signals for your entries and links
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]

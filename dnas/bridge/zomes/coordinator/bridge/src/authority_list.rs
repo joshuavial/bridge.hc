@@ -1,5 +1,7 @@
 use bridge_integrity::*;
 use hdk::prelude::*;
+use super::utils::*;
+
 #[hdk_extern]
 pub fn create_authority_list(authority_list: AuthorityList) -> ExternResult<Record> {
     let authority_list_hash = create_entry(&EntryTypes::AuthorityList(authority_list.clone()))?;
@@ -10,26 +12,28 @@ pub fn create_authority_list(authority_list: AuthorityList) -> ExternResult<Reco
     ))?;
     Ok(record)
 }
-#[hdk_extern]
-pub fn get_authority_list(_: ()) -> ExternResult<Option<Record>> {
-    get_latest_authority_list()
-}
 
-fn get_latest_authority_list() -> ExternResult<Option<Record>> {
-    //get progenitor source chain
-    let properties = Properties::try_from(dna_info()?.properties)
-        .map_err(|e| wasm_error!(WasmErrorInner::Guest("Malformed properties".into())))?;
-    let progenitor_pub_key = properties.progenitor_dht_address;
+pub fn handle_get_authority_list() -> ExternResult<Record> {
+    let progenitor_pub_key = Properties::new()?.progenitor_dht_address;
     let auth_list_entry_type: EntryType = UnitEntryTypes::AuthorityList.try_into()?;
-    let filter = ChainQueryFilter::new().entry_type(auth_list_entry_type);
+    let filter = ChainQueryFilter::new().entry_type(auth_list_entry_type).include_entries(true);
+
     let activity = get_agent_activity(progenitor_pub_key, filter, ActivityRequest::Full)?;
 
-    warn!("{:#?}", activity);
-
-    //get first create get all auth list actions to get auth_list_hash
-    //check one and only
-    Ok(None)
+    //if not exactly one create entry error
+    if activity.valid_activity.len() != 1 {
+        Err(wasm_error!("Invalid authority list number must be exactly 1, you found {}", activity.valid_activity.len()))
+    } else {
+        let (_, action_hash) = activity.valid_activity.first().unwrap();
+        let details = get_details(action_hash.to_owned(), GetOptions::default())?;
+        if let Details::Record(record_detail) = details.unwrap() {
+            Ok(record_detail.record)
+        } else {
+            Err(wasm_error!("Could not access the authority list"))
+        }
+    }
 }
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct UpdateAuthorityListInput {
     pub previous_authority_list_hash: ActionHash,

@@ -114,21 +114,21 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
             _ => Ok(ValidateCallbackResult::Valid),
         },
         OpType::RegisterCreateLink {
-            link_type,
-            base_address,
-            target_address,
-            tag,
-            action,
+            link_type: _,
+            base_address: _,
+            target_address: _,
+            tag: _,
+            action: _,
         } => Ok(ValidateCallbackResult::Invalid(String::from(
             "There are no link types in this integrity zome",
         ))),
         OpType::RegisterDeleteLink {
-            link_type,
-            base_address,
-            target_address,
-            tag,
-            original_action,
-            action,
+            link_type: _,
+            base_address: _,
+            target_address: _,
+            tag: _,
+            original_action: _,
+            action: _,
         } => Ok(ValidateCallbackResult::Invalid(String::from(
             "There are no link types in this integrity zome",
         ))),
@@ -202,7 +202,7 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                             }
                         }
 
-                        EntryTypes::Transaction(transaction) => Ok(ValidateCallbackResult::Valid),
+                        EntryTypes::Transaction(_transaction) => Ok(ValidateCallbackResult::Valid),
                     }
                 }
                 // Complementary validation to the `RegisterDelete` Op, in which the record itself is validated
@@ -282,11 +282,11 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                 // If you want to optimize performance, you can remove the validation for an entry type here and keep it in `RegisterCreateLink`
                 // Notice that doing so will cause `must_get_valid_record` for this record to return a valid record even if the `RegisterCreateLink` validation failed
                 OpRecord::CreateLink {
-                    base_address,
-                    target_address,
-                    tag,
-                    link_type,
-                    action,
+                    base_address: _,
+                    target_address: _,
+                    tag: _,
+                    link_type: _,
+                    action: _,
                 } => Ok(ValidateCallbackResult::Invalid(
                     "There are no link types in this integrity zome".to_string(),
                 )),
@@ -294,9 +294,9 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                 // If you want to optimize performance, you can remove the validation for an entry type here and keep it in `RegisterDeleteLink`
                 // Notice that doing so will cause `must_get_valid_record` for this record to return a valid record even if the `RegisterDeleteLink` validation failed
                 OpRecord::DeleteLink {
-                    original_action_hash,
-                    base_address,
-                    action,
+                    original_action_hash: _,
+                    base_address: _,
+                    action: _,
                 } => Ok(ValidateCallbackResult::Invalid(
                     "There are no link types in this integrity zome".to_string(),
                 )),
