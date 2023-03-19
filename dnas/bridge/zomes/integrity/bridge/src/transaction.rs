@@ -20,6 +20,12 @@ pub fn validate_create_transaction(
     _action: EntryCreationAction,
     _transaction: Transaction,
 ) -> ExternResult<ValidateCallbackResult> {
+    //TODO
+    //can't go below zero
+    //sender / receiver token the same
+    //sender and receiver need to sign
+    //counterparty sigs
+    //if spender or recipient is None then 
     Ok(ValidateCallbackResult::Valid)
 }
 pub fn validate_update_transaction(
