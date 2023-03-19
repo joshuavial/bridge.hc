@@ -1,3 +1,4 @@
+//TODO double check plumbing of all validations
 pub mod approval;
 pub use approval::*;
 pub mod authority_list;
@@ -5,8 +6,8 @@ pub use authority_list::*;
 pub mod properties;
 pub use properties::*;
 pub mod transaction;
-pub use transaction::*;
 use hdi::prelude::*;
+pub use transaction::*;
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "type")]
 #[hdk_entry_defs]
@@ -22,9 +23,7 @@ pub enum LinkTypes {
     ApprovalUpdates,
 }
 #[hdk_extern]
-pub fn genesis_self_check(
-    _data: GenesisSelfCheckData,
-) -> ExternResult<ValidateCallbackResult> {
+pub fn genesis_self_check(_data: GenesisSelfCheckData) -> ExternResult<ValidateCallbackResult> {
     Ok(ValidateCallbackResult::Valid)
 }
 pub fn validate_agent_joining(
@@ -38,141 +37,115 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
     match op.to_type::<EntryTypes, LinkTypes>()? {
         OpType::StoreEntry(store_entry) => {
             match store_entry {
-                OpEntry::CreateEntry { app_entry, action } => {
-                    match app_entry {
-                        EntryTypes::AuthorityList(authority_list) => {
-                            validate_create_authority_list(
-                                EntryCreationAction::Create(action),
-                                authority_list,
-                            )
-                        }
-                        EntryTypes::Transaction(transaction) => {
-                            validate_create_transaction(
-                                EntryCreationAction::Create(action),
-                                transaction,
-                            )
-                        }
-                        EntryTypes::Approval(approval) => {
-                            validate_create_approval(
-                                EntryCreationAction::Create(action),
-                                approval,
-                            )
-                        }
+                OpEntry::CreateEntry { app_entry, action } => match app_entry {
+                    EntryTypes::AuthorityList(authority_list) => validate_create_authority_list(
+                        EntryCreationAction::Create(action),
+                        authority_list,
+                    ),
+                    EntryTypes::Transaction(transaction) => validate_create_transaction(
+                        EntryCreationAction::Create(action),
+                        transaction,
+                    ),
+                    EntryTypes::Approval(approval) => {
+                        validate_create_approval(EntryCreationAction::Create(action), approval)
                     }
-                }
-                OpEntry::UpdateEntry { app_entry, action, .. } => {
-                    match app_entry {
-                        EntryTypes::AuthorityList(authority_list) => {
-                            validate_create_authority_list(
-                                EntryCreationAction::Update(action),
-                                authority_list,
-                            )
-                        }
-                        EntryTypes::Transaction(transaction) => {
-                            validate_create_transaction(
-                                EntryCreationAction::Update(action),
-                                transaction,
-                            )
-                        }
-                        EntryTypes::Approval(approval) => {
-                            validate_create_approval(
-                                EntryCreationAction::Update(action),
-                                approval,
-                            )
-                        }
-                    }
-                }
-                _ => Ok(ValidateCallbackResult::Valid),
-            }
-        }
-        OpType::RegisterUpdate(update_entry) => {
-            match update_entry {
-                OpUpdate::Entry {
-                    original_action,
-                    original_app_entry,
+                },
+                OpEntry::UpdateEntry {
                     app_entry,
-                    action,
+                    action: _,
+                    original_entry_hash: _,
+                    original_action_hash: _,
                 } => {
-                    match (app_entry, original_app_entry) {
-                        (
-                            EntryTypes::Approval(approval),
-                            EntryTypes::Approval(original_approval),
-                        ) => {
-                            validate_update_approval(
-                                action,
-                                approval,
-                                original_action,
-                                original_approval,
-                            )
+                    match app_entry {
+                        EntryTypes::AuthorityList(_authority_list) => {
+                            //TODO FIXME
+                            Ok(ValidateCallbackResult::Valid)
+                            //validate_update_authority_list(
+                            //EntryCreationAction::Update(action),
+                            //authority_list,
+                            //original_entry_hash,
+                            //original_action_hash,
+                            //)
                         }
-                        (
-                            EntryTypes::AuthorityList(authority_list),
-                            EntryTypes::AuthorityList(original_authority_list),
-                        ) => {
-                            validate_update_authority_list(
-                                action,
-                                authority_list,
-                                original_action,
-                                original_authority_list,
-                            )
+                        EntryTypes::Transaction(_transaction) => {
+                            //TODO FIXME
+                            Ok(ValidateCallbackResult::Valid)
+                            //validate_update_transaction(
+                            //EntryCreationAction::Update(action),
+                            //transaction,
+                            //original_entry_hash,
+                            //original_action_hash,
+                            //)
                         }
-                        _ => {
-                            Ok(
-                                ValidateCallbackResult::Invalid(
-                                    "Original and updated entry types must be the same"
-                                        .to_string(),
-                                ),
-                            )
-                        }
-                    }
-                }
-                _ => Ok(ValidateCallbackResult::Valid),
-            }
-        }
-        OpType::RegisterDelete(delete_entry) => {
-            match delete_entry {
-                OpDelete::Entry { original_action, original_app_entry, action } => {
-                    match original_app_entry {
-                        EntryTypes::AuthorityList(authority_list) => {
-                            validate_delete_authority_list(
-                                action,
-                                original_action,
-                                authority_list,
-                            )
-                        }
-                        EntryTypes::Transaction(transaction) => {
-                            validate_delete_transaction(
-                                action,
-                                original_action,
-                                transaction,
-                            )
-                        }
-                        EntryTypes::Approval(approval) => {
-                            validate_delete_approval(action, original_action, approval)
+                        EntryTypes::Approval(_approval) => {
+                            //TODO FIXME
+                            Ok(ValidateCallbackResult::Valid)
+                            //validate_update_approval(
+                            //EntryCreationAction::Update(action),
+                            //approval,
+                            //original_entry_hash,
+                            //original_action_hash,
+                            //)
                         }
                     }
                 }
                 _ => Ok(ValidateCallbackResult::Valid),
             }
         }
+        OpType::RegisterUpdate(update_entry) => match update_entry {
+            OpUpdate::Entry {
+                original_action,
+                original_app_entry,
+                app_entry,
+                action,
+            } => match (app_entry, original_app_entry) {
+                (EntryTypes::Approval(approval), EntryTypes::Approval(original_approval)) => {
+                    validate_update_approval(action, approval, original_action, original_approval)
+                }
+                (
+                    EntryTypes::AuthorityList(authority_list),
+                    EntryTypes::AuthorityList(original_authority_list),
+                ) => validate_update_authority_list(
+                    action,
+                    authority_list,
+                    original_action,
+                    original_authority_list,
+                ),
+                _ => Ok(ValidateCallbackResult::Invalid(
+                    "Original and updated entry types must be the same".to_string(),
+                )),
+            },
+            _ => Ok(ValidateCallbackResult::Valid),
+        },
+        OpType::RegisterDelete(delete_entry) => match delete_entry {
+            OpDelete::Entry {
+                original_action,
+                original_app_entry,
+                action,
+            } => match original_app_entry {
+                EntryTypes::AuthorityList(authority_list) => {
+                    validate_delete_authority_list(action, original_action, authority_list)
+                }
+                EntryTypes::Transaction(transaction) => {
+                    validate_delete_transaction(action, original_action, transaction)
+                }
+                EntryTypes::Approval(approval) => {
+                    validate_delete_approval(action, original_action, approval)
+                }
+            },
+            _ => Ok(ValidateCallbackResult::Valid),
+        },
         OpType::RegisterCreateLink {
             link_type,
             base_address,
             target_address,
             tag,
             action,
-        } => {
-            match link_type {
-                LinkTypes::ApprovalUpdates => {
-                    validate_create_link_approval_updates(
-                        action,
-                        base_address,
-                        target_address,
-                        tag,
-                    )
-                }
+        } => match link_type {
+            LinkTypes::ApprovalUpdates => {
+                validate_create_link_approval_updates(action, base_address, target_address, tag)
             }
-        }
+        },
         OpType::RegisterDeleteLink {
             link_type,
             base_address,
@@ -180,280 +153,233 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
             tag,
             original_action,
             action,
-        } => {
-            match link_type {
-                LinkTypes::ApprovalUpdates => {
-                    validate_delete_link_approval_updates(
-                        action,
-                        original_action,
-                        base_address,
-                        target_address,
-                        tag,
-                    )
+        } => match link_type {
+            LinkTypes::ApprovalUpdates => validate_delete_link_approval_updates(
+                action,
+                original_action,
+                base_address,
+                target_address,
+                tag,
+            ),
+        },
+        OpType::StoreRecord(store_record) => match store_record {
+            OpRecord::CreateEntry { app_entry, action } => match app_entry {
+                EntryTypes::AuthorityList(authority_list) => validate_create_authority_list(
+                    EntryCreationAction::Create(action),
+                    authority_list,
+                ),
+                EntryTypes::Transaction(transaction) => {
+                    validate_create_transaction(EntryCreationAction::Create(action), transaction)
+                }
+                EntryTypes::Approval(approval) => {
+                    validate_create_approval(EntryCreationAction::Create(action), approval)
+                }
+            },
+            OpRecord::UpdateEntry {
+                original_action_hash,
+                app_entry,
+                action,
+                ..
+            } => {
+                let original_record = must_get_valid_record(original_action_hash)?;
+                let original_action = original_record.action().clone();
+                let original_action = match original_action {
+                    Action::Create(create) => EntryCreationAction::Create(create),
+                    Action::Update(update) => EntryCreationAction::Update(update),
+                    _ => {
+                        return Ok(ValidateCallbackResult::Invalid(
+                            "Original action for an update must be a Create or Update action"
+                                .to_string(),
+                        ));
+                    }
+                };
+                match app_entry {
+                    EntryTypes::AuthorityList(authority_list) => {
+                        let original_authority_list: Option<AuthorityList> = original_record
+                            .entry()
+                            .to_app_option()
+                            .map_err(|e| wasm_error!(e))?;
+                        let original_authority_list = match original_authority_list {
+                            Some(authority_list) => authority_list,
+                            None => {
+                                return Ok(
+                                            ValidateCallbackResult::Invalid(
+                                                "The updated entry type must be the same as the original entry type"
+                                                    .to_string(),
+                                            ),
+                                        );
+                            }
+                        };
+                        validate_update_authority_list(
+                            action,
+                            authority_list,
+                            original_action,
+                            original_authority_list,
+                        )
+                    }
+                    EntryTypes::Transaction(_transaction) => Ok(ValidateCallbackResult::Valid),
+                    EntryTypes::Approval(approval) => {
+                        let result = validate_create_approval(
+                            EntryCreationAction::Update(action.clone()),
+                            approval.clone(),
+                        )?;
+                        if let ValidateCallbackResult::Valid = result {
+                            let original_approval: Option<Approval> = original_record
+                                .entry()
+                                .to_app_option()
+                                .map_err(|e| wasm_error!(e))?;
+                            let original_approval = match original_approval {
+                                Some(approval) => approval,
+                                None => {
+                                    return Ok(
+                                            ValidateCallbackResult::Invalid(
+                                                "The updated entry type must be the same as the original entry type"
+                                                    .to_string(),
+                                            ),
+                                        );
+                                }
+                            };
+                            validate_update_approval(
+                                action,
+                                approval,
+                                original_action,
+                                original_approval,
+                            )
+                        } else {
+                            Ok(result)
+                        }
+                    }
                 }
             }
-        }
-        OpType::StoreRecord(store_record) => {
-            match store_record {
-                OpRecord::CreateEntry { app_entry, action } => {
-                    match app_entry {
-                        EntryTypes::AuthorityList(authority_list) => {
-                            validate_create_authority_list(
-                                EntryCreationAction::Create(action),
-                                authority_list,
-                            )
-                        }
-                        EntryTypes::Transaction(transaction) => {
-                            validate_create_transaction(
-                                EntryCreationAction::Create(action),
-                                transaction,
-                            )
-                        }
-                        EntryTypes::Approval(approval) => {
-                            validate_create_approval(
-                                EntryCreationAction::Create(action),
-                                approval,
-                            )
-                        }
+            OpRecord::DeleteEntry {
+                original_action_hash,
+                action,
+                ..
+            } => {
+                let original_record = must_get_valid_record(original_action_hash)?;
+                let original_action = original_record.action().clone();
+                let original_action = match original_action {
+                    Action::Create(create) => EntryCreationAction::Create(create),
+                    Action::Update(update) => EntryCreationAction::Update(update),
+                    _ => {
+                        return Ok(ValidateCallbackResult::Invalid(
+                            "Original action for a delete must be a Create or Update action"
+                                .to_string(),
+                        ));
                     }
-                }
-                OpRecord::UpdateEntry {
-                    original_action_hash,
-                    app_entry,
-                    action,
-                    ..
-                } => {
-                    let original_record = must_get_valid_record(original_action_hash)?;
-                    let original_action = original_record.action().clone();
-                    let original_action = match original_action {
-                        Action::Create(create) => EntryCreationAction::Create(create),
-                        Action::Update(update) => EntryCreationAction::Update(update),
-                        _ => {
-                            return Ok(
-                                ValidateCallbackResult::Invalid(
-                                    "Original action for an update must be a Create or Update action"
-                                        .to_string(),
-                                ),
-                            );
-                        }
-                    };
-                    match app_entry {
-                        EntryTypes::AuthorityList(authority_list) => {
-                            let result = validate_create_authority_list(
-                                EntryCreationAction::Update(action.clone()),
-                                authority_list.clone(),
-                            )?;
-                            if let ValidateCallbackResult::Valid = result {
-                                let original_authority_list: Option<AuthorityList> = original_record
-                                    .entry()
-                                    .to_app_option()
-                                    .map_err(|e| wasm_error!(e))?;
-                                let original_authority_list = match original_authority_list {
-                                    Some(authority_list) => authority_list,
-                                    None => {
-                                        return Ok(
-                                            ValidateCallbackResult::Invalid(
-                                                "The updated entry type must be the same as the original entry type"
-                                                    .to_string(),
-                                            ),
-                                        );
-                                    }
-                                };
-                                validate_update_authority_list(
-                                    action,
-                                    authority_list,
-                                    original_action,
-                                    original_authority_list,
-                                )
-                            } else {
-                                Ok(result)
-                            }
-                        }
-                        EntryTypes::Transaction(_transaction) => {
-                            Ok(ValidateCallbackResult::Valid)
-                        }
-                        EntryTypes::Approval(approval) => {
-                            let result = validate_create_approval(
-                                EntryCreationAction::Update(action.clone()),
-                                approval.clone(),
-                            )?;
-                            if let ValidateCallbackResult::Valid = result {
-                                let original_approval: Option<Approval> = original_record
-                                    .entry()
-                                    .to_app_option()
-                                    .map_err(|e| wasm_error!(e))?;
-                                let original_approval = match original_approval {
-                                    Some(approval) => approval,
-                                    None => {
-                                        return Ok(
-                                            ValidateCallbackResult::Invalid(
-                                                "The updated entry type must be the same as the original entry type"
-                                                    .to_string(),
-                                            ),
-                                        );
-                                    }
-                                };
-                                validate_update_approval(
-                                    action,
-                                    approval,
-                                    original_action,
-                                    original_approval,
-                                )
-                            } else {
-                                Ok(result)
-                            }
-                        }
+                };
+                let app_entry_type = match original_action.entry_type() {
+                    EntryType::App(app_entry_type) => app_entry_type,
+                    _ => {
+                        return Ok(ValidateCallbackResult::Valid);
                     }
-                }
-                OpRecord::DeleteEntry { original_action_hash, action, .. } => {
-                    let original_record = must_get_valid_record(original_action_hash)?;
-                    let original_action = original_record.action().clone();
-                    let original_action = match original_action {
-                        Action::Create(create) => EntryCreationAction::Create(create),
-                        Action::Update(update) => EntryCreationAction::Update(update),
-                        _ => {
+                };
+                let entry = match original_record.entry().as_option() {
+                    Some(entry) => entry,
+                    None => {
+                        if original_action.entry_type().visibility().is_public() {
                             return Ok(
-                                ValidateCallbackResult::Invalid(
-                                    "Original action for a delete must be a Create or Update action"
-                                        .to_string(),
-                                ),
-                            );
-                        }
-                    };
-                    let app_entry_type = match original_action.entry_type() {
-                        EntryType::App(app_entry_type) => app_entry_type,
-                        _ => {
-                            return Ok(ValidateCallbackResult::Valid);
-                        }
-                    };
-                    let entry = match original_record.entry().as_option() {
-                        Some(entry) => entry,
-                        None => {
-                            if original_action.entry_type().visibility().is_public() {
-                                return Ok(
                                     ValidateCallbackResult::Invalid(
                                         "Original record for a delete of a public entry must contain an entry"
                                             .to_string(),
                                     ),
                                 );
-                            } else {
-                                return Ok(ValidateCallbackResult::Valid);
-                            }
+                        } else {
+                            return Ok(ValidateCallbackResult::Valid);
                         }
-                    };
-                    let original_app_entry = match EntryTypes::deserialize_from_type(
-                        app_entry_type.zome_index.clone(),
-                        app_entry_type.entry_index.clone(),
-                        &entry,
-                    )? {
-                        Some(app_entry) => app_entry,
-                        None => {
-                            return Ok(
+                    }
+                };
+                let original_app_entry = match EntryTypes::deserialize_from_type(
+                    app_entry_type.zome_index.clone(),
+                    app_entry_type.entry_index.clone(),
+                    &entry,
+                )? {
+                    Some(app_entry) => app_entry,
+                    None => {
+                        return Ok(
                                 ValidateCallbackResult::Invalid(
                                     "Original app entry must be one of the defined entry types for this zome"
                                         .to_string(),
                                 ),
                             );
-                        }
-                    };
-                    match original_app_entry {
-                        EntryTypes::AuthorityList(original_authority_list) => {
-                            validate_delete_authority_list(
-                                action,
-                                original_action,
-                                original_authority_list,
-                            )
-                        }
-                        EntryTypes::Transaction(original_transaction) => {
-                            validate_delete_transaction(
-                                action,
-                                original_action,
-                                original_transaction,
-                            )
-                        }
-                        EntryTypes::Approval(original_approval) => {
-                            validate_delete_approval(
-                                action,
-                                original_action,
-                                original_approval,
-                            )
-                        }
+                    }
+                };
+                match original_app_entry {
+                    EntryTypes::AuthorityList(original_authority_list) => {
+                        validate_delete_authority_list(
+                            action,
+                            original_action,
+                            original_authority_list,
+                        )
+                    }
+                    EntryTypes::Transaction(original_transaction) => {
+                        validate_delete_transaction(action, original_action, original_transaction)
+                    }
+                    EntryTypes::Approval(original_approval) => {
+                        validate_delete_approval(action, original_action, original_approval)
                     }
                 }
-                OpRecord::CreateLink {
-                    base_address,
-                    target_address,
-                    tag,
-                    link_type,
-                    action,
-                } => {
-                    match link_type {
-                        LinkTypes::ApprovalUpdates => {
-                            validate_create_link_approval_updates(
-                                action,
-                                base_address,
-                                target_address,
-                                tag,
-                            )
-                        }
-                    }
-                }
-                OpRecord::DeleteLink {
-                    original_action_hash,
-                    base_address,
-                    action,
-                } => {
-                    let record = must_get_valid_record(original_action_hash)?;
-                    let create_link = match record.action() {
-                        Action::CreateLink(create_link) => create_link.clone(),
-                        _ => {
-                            return Ok(
-                                ValidateCallbackResult::Invalid(
-                                    "The action that a DeleteLink deletes must be a CreateLink"
-                                        .to_string(),
-                                ),
-                            );
-                        }
-                    };
-                    let link_type = match LinkTypes::from_type(
-                        create_link.zome_index.clone(),
-                        create_link.link_type.clone(),
-                    )? {
-                        Some(lt) => lt,
-                        None => {
-                            return Ok(ValidateCallbackResult::Valid);
-                        }
-                    };
-                    match link_type {
-                        LinkTypes::ApprovalUpdates => {
-                            validate_delete_link_approval_updates(
-                                action,
-                                create_link.clone(),
-                                base_address,
-                                create_link.target_address,
-                                create_link.tag,
-                            )
-                        }
-                    }
-                }
-                OpRecord::CreatePrivateEntry { .. } => Ok(ValidateCallbackResult::Valid),
-                OpRecord::UpdatePrivateEntry { .. } => Ok(ValidateCallbackResult::Valid),
-                OpRecord::CreateCapClaim { .. } => Ok(ValidateCallbackResult::Valid),
-                OpRecord::CreateCapGrant { .. } => Ok(ValidateCallbackResult::Valid),
-                OpRecord::UpdateCapClaim { .. } => Ok(ValidateCallbackResult::Valid),
-                OpRecord::UpdateCapGrant { .. } => Ok(ValidateCallbackResult::Valid),
-                OpRecord::Dna { .. } => Ok(ValidateCallbackResult::Valid),
-                OpRecord::OpenChain { .. } => Ok(ValidateCallbackResult::Valid),
-                OpRecord::CloseChain { .. } => Ok(ValidateCallbackResult::Valid),
-                OpRecord::InitZomesComplete { .. } => Ok(ValidateCallbackResult::Valid),
-                _ => Ok(ValidateCallbackResult::Valid),
             }
-        }
-        OpType::RegisterAgentActivity(agent_activity) => {
-            match agent_activity {
-                OpActivity::CreateAgent { agent, action } => {
-                    let previous_action = must_get_action(action.prev_action)?;
-                    match previous_action.action() {
+            OpRecord::CreateLink {
+                base_address,
+                target_address,
+                tag,
+                link_type,
+                action,
+            } => match link_type {
+                LinkTypes::ApprovalUpdates => {
+                    validate_create_link_approval_updates(action, base_address, target_address, tag)
+                }
+            },
+            OpRecord::DeleteLink {
+                original_action_hash,
+                base_address,
+                action,
+            } => {
+                let record = must_get_valid_record(original_action_hash)?;
+                let create_link = match record.action() {
+                    Action::CreateLink(create_link) => create_link.clone(),
+                    _ => {
+                        return Ok(ValidateCallbackResult::Invalid(
+                            "The action that a DeleteLink deletes must be a CreateLink".to_string(),
+                        ));
+                    }
+                };
+                let link_type = match LinkTypes::from_type(
+                    create_link.zome_index.clone(),
+                    create_link.link_type.clone(),
+                )? {
+                    Some(lt) => lt,
+                    None => {
+                        return Ok(ValidateCallbackResult::Valid);
+                    }
+                };
+                match link_type {
+                    LinkTypes::ApprovalUpdates => validate_delete_link_approval_updates(
+                        action,
+                        create_link.clone(),
+                        base_address,
+                        create_link.target_address,
+                        create_link.tag,
+                    ),
+                }
+            }
+            OpRecord::CreatePrivateEntry { .. } => Ok(ValidateCallbackResult::Valid),
+            OpRecord::UpdatePrivateEntry { .. } => Ok(ValidateCallbackResult::Valid),
+            OpRecord::CreateCapClaim { .. } => Ok(ValidateCallbackResult::Valid),
+            OpRecord::CreateCapGrant { .. } => Ok(ValidateCallbackResult::Valid),
+            OpRecord::UpdateCapClaim { .. } => Ok(ValidateCallbackResult::Valid),
+            OpRecord::UpdateCapGrant { .. } => Ok(ValidateCallbackResult::Valid),
+            OpRecord::Dna { .. } => Ok(ValidateCallbackResult::Valid),
+            OpRecord::OpenChain { .. } => Ok(ValidateCallbackResult::Valid),
+            OpRecord::CloseChain { .. } => Ok(ValidateCallbackResult::Valid),
+            OpRecord::InitZomesComplete { .. } => Ok(ValidateCallbackResult::Valid),
+            _ => Ok(ValidateCallbackResult::Valid),
+        },
+        OpType::RegisterAgentActivity(agent_activity) => match agent_activity {
+            OpActivity::CreateAgent { agent, action } => {
+                let previous_action = must_get_action(action.prev_action)?;
+                match previous_action.action() {
                         Action::AgentValidationPkg(
                             AgentValidationPkg { membrane_proof, .. },
                         ) => validate_agent_joining(agent, membrane_proof),
@@ -466,9 +392,8 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                             )
                         }
                     }
-                }
-                _ => Ok(ValidateCallbackResult::Valid),
             }
-        }
+            _ => Ok(ValidateCallbackResult::Valid),
+        },
     }
 }

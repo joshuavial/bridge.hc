@@ -4,10 +4,9 @@ import { runScenario, pause, CallableCell } from '@holochain/tryorama';
 import { NewEntryAction, ActionHash, Record, AppBundleSource, fakeDnaHash, fakeActionHash, fakeAgentPubKey, fakeEntryHash } from '@holochain/client';
 import { decode } from '@msgpack/msgpack';
 
-import { createAuthorityList, sampleAuthorityList } from './common.js';
+import { sampleAuthorityList } from './common.js';
 
 import {installApp} from './utils.js';
-
 
 test('AuthorityList generated from properties by progenitor', async () => {
   await runScenario(async scenario => {

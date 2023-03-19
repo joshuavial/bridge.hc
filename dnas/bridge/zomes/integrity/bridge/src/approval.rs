@@ -1,9 +1,17 @@
 use hdi::prelude::*;
+use super::authority_list::AuthorityList;
+use super::transaction::Transaction;
+
+#[derive(Clone, Serialize, Deserialize, Debug)]
+pub enum ProposedEntry {
+    Transaction(Transaction),
+    AuthorityList(AuthorityList),
+}
+
 #[hdk_entry_helper]
-#[derive(Clone, PartialEq)]
+#[derive(Clone)]
 pub struct Approval {
-    pub authority_list: EntryHash,
-    pub timestamp: Timestamp,
+    pub proposed_entry: ProposedEntry,
     pub approved_by: Vec<AgentPubKey>,
 }
 pub fn validate_create_approval(

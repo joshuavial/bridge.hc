@@ -28,6 +28,12 @@ pub fn whoami(_: ()) -> ExternResult<AgentPubKey> {
 pub fn get_authority_list(_: ()) -> ExternResult<AuthorityList> {
     authority_list::handle_get_authority_list()
 }
+
+#[hdk_extern]
+pub fn update_authority_list(new_authority_list: AuthorityList) -> ExternResult<ActionHash> {
+    authority_list::handle_update_authority_list(new_authority_list)
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
 pub enum Signal {

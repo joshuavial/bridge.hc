@@ -13,15 +13,6 @@ export async function sampleAuthorityList(cell: CallableCell, partialAuthorityLi
     };
 }
 
-export async function createAuthorityList(cell: CallableCell, authorityList = undefined): Promise<Record> {
-    return cell.callZome({
-      zome_name: "bridge",
-      fn_name: "create_authority_list",
-      payload: authorityList || await sampleAuthorityList(cell),
-    });
-}
-
-
 
 export async function sampleApproval(cell: CallableCell, partialApproval = {}) {
     return {
@@ -34,7 +25,7 @@ export async function sampleApproval(cell: CallableCell, partialApproval = {}) {
     };
 }
 
-export async function createApproval(cell: CallableCell, approval = undefined): Promise<Record> {
+export async function createApproval(cell: CallableCell, approval = undefined): Promise<String> {
     return cell.callZome({
       zome_name: "bridge",
       fn_name: "create_approval",

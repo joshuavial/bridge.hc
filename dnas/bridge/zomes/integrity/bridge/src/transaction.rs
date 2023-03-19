@@ -8,10 +8,11 @@ pub struct TransactionParty {
     pub resulting_balance: f64,
 }
 #[hdk_entry_helper]
+#[derive(Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Transaction {
-    pub spender: TransactionParty,
-    pub recipient: TransactionParty,
+    pub spender: Option<TransactionParty>,
+    pub recipient: Option<TransactionParty>,
     pub amount: f64,
     pub info: SerializedBytes,
 }
