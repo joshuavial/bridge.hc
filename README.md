@@ -30,22 +30,21 @@ Entries
     - if cross-chain and updated then add cross-chain refrence countersigned by x% of authorities
   
 - AuthorityList 
-  - list of authorities (holo_pubkey, eth_pubkey) is initially just the progenitor
-  - progenitor eth address and consensus percentage provided by the properties of the dht
+  - list of authorities (holo_pubkey, eth_pubkey) is initially just the progenitor [done]
+  - progenitor eth address and consensus percentage provided by the properties of the dht [done]
+  - tracks the consensus % required to validate transactions = 51% -> 100%
 
-  - role based administration of the authority list is needed to add enough peers to reach a meaningful consensus
-    - Options for roles pattern
+- Approval
+  - current_authority_list entry hash
+  - transaction || authority_list
+  - signers vec of pub keys
+  - approved function which is true when enough signers are on the vec (as per authority_list rules)
 
-    1. Similar to private_public_publications exercise
-
-    2. A separate dht/cell that is used to store the assigned roles and agentpubkeys.
-      - how many roles would we want (do authorities all have the same role as the progenitor once the cell is established?)
-
- 
   - validations
-    - at least 50% sign an update to the list
-  
-
+    - deposit transactions can be created by anyone
+    - withdrawal transacions can be created by self only
+    - only an account with pubkey in current_authority_list can add self to signers
+    - current_authority_list is alive i.e has never been deleted - possible?
 
 - ChainList
   - array of bdige_contracts (id of chain (1 for Ethereum, 2 for Optimism (or whatever) etc.) (maybe use Eth chain ids) - can use for building a testnet dht + contract address)
