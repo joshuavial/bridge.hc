@@ -21,3 +21,24 @@ export async function createAuthorityList(cell: CallableCell, authorityList = un
     });
 }
 
+
+
+export async function sampleApproval(cell: CallableCell, partialApproval = {}) {
+    return {
+        ...{
+	  authority_list: (await fakeEntryHash()),
+	  timestamp: 1674053334548000,
+	  approved_by: [(await fakeAgentPubKey())],
+        },
+        ...partialApproval
+    };
+}
+
+export async function createApproval(cell: CallableCell, approval = undefined): Promise<Record> {
+    return cell.callZome({
+      zome_name: "bridge",
+      fn_name: "create_approval",
+      payload: approval || await sampleApproval(cell),
+    });
+}
+

@@ -1,26 +1,42 @@
 use hdi::prelude::*;
 use super::properties::*;
-
 #[hdk_entry_helper]
 #[derive(Clone, PartialEq)]
 pub struct AuthorityList {
     pub percentage_for_consensus: u32,
     pub authorities: Vec<(AgentPubKey, String)>,
 }
-
 pub fn validate_create_authority_list(
     action: EntryCreationAction,
     authority_list: AuthorityList,
 ) -> ExternResult<ValidateCallbackResult> {
     let properties = Properties::new()?;
     if action.author().to_owned() != properties.progenitor_dht_address {
-        return Ok(ValidateCallbackResult::Invalid(String::from("Only Progenitor can create an authority list")));
+        return Ok(
+            ValidateCallbackResult::Invalid(
+                String::from("Only Progenitor can create an authority list"),
+            ),
+        );
     }
     if action.action_seq().to_owned() != 4 {
-        return Ok(ValidateCallbackResult::Invalid(String::from("The authority list must be created immediately at initialisation")));
+        return Ok(
+            ValidateCallbackResult::Invalid(
+                String::from(
+                    "The authority list must be created immediately at initialisation",
+                ),
+            ),
+        );
     }
-    if authority_list.percentage_for_consensus < 51 || authority_list.percentage_for_consensus > 100 {
-        return Ok(ValidateCallbackResult::Invalid(String::from("Percentage for consensus must be greater than 50 and less than or equal to 100")));
+    if authority_list.percentage_for_consensus < 51
+        || authority_list.percentage_for_consensus > 100
+    {
+        return Ok(
+            ValidateCallbackResult::Invalid(
+                String::from(
+                    "Percentage for consensus must be greater than 50 and less than or equal to 100",
+                ),
+            ),
+        );
     }
     Ok(ValidateCallbackResult::Valid)
 }
@@ -30,12 +46,6 @@ pub fn validate_update_authority_list(
     _original_action: EntryCreationAction,
     _original_authority_list: AuthorityList,
 ) -> ExternResult<ValidateCallbackResult> {
-    //TODO 
-    //must have quorum of countersignatures of current authorities
-    //previous auth list
-    //count signatures
-    //check each countersigner is valid auth list participant
-    //does have quorum
     Ok(ValidateCallbackResult::Valid)
 }
 pub fn validate_delete_authority_list(
@@ -43,7 +53,9 @@ pub fn validate_delete_authority_list(
     _original_action: EntryCreationAction,
     _original_authority_list: AuthorityList,
 ) -> ExternResult<ValidateCallbackResult> {
-    Ok(ValidateCallbackResult::Invalid(String::from(
-        "Authority Lists cannot be deleted",
-    )))
+    Ok(
+        ValidateCallbackResult::Invalid(
+            String::from("Authority Lists cannot be deleted"),
+        ),
+    )
 }

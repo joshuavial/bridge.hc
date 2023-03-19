@@ -36,6 +36,7 @@ export type BridgeSignal = {
 };
 
 export type EntryTypes =
+ | ({ type: 'Approval'; } & Approval)
  | ({  type: 'AuthorityList'; } & AuthorityList);
 
 
@@ -44,6 +45,18 @@ export interface AuthorityList {
   percentage_for_consensus: number;
 
   authorities: Array<string>;
+}
+
+
+
+
+
+export interface Approval { 
+  authority_list: EntryHash;
+
+  timestamp: number;
+
+  approved_by: Array<AgentPubKey>;
 }
 
 

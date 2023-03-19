@@ -1,6 +1,5 @@
 use hdi::prelude::holo_hash::{ActionHashB64, AgentPubKeyB64};
 use hdk::prelude::*;
-
 #[derive(Serialize, Deserialize, Debug, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TransactionParty {
@@ -8,7 +7,6 @@ pub struct TransactionParty {
     pub previous_transaction_hash: Option<ActionHashB64>,
     pub resulting_balance: f64,
 }
-
 #[hdk_entry_helper]
 #[serde(rename_all = "camelCase")]
 pub struct Transaction {
@@ -17,7 +15,6 @@ pub struct Transaction {
     pub amount: f64,
     pub info: SerializedBytes,
 }
-
 pub fn validate_create_transaction(
     _action: EntryCreationAction,
     _transaction: Transaction,
@@ -37,7 +34,5 @@ pub fn validate_delete_transaction(
     _original_action: EntryCreationAction,
     _original_transaction: Transaction,
 ) -> ExternResult<ValidateCallbackResult> {
-    Ok(ValidateCallbackResult::Invalid(String::from(
-        "Transactions cannot be deleted",
-    )))
+    Ok(ValidateCallbackResult::Invalid(String::from("Transactions cannot be deleted")))
 }
