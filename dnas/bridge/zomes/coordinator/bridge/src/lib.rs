@@ -7,14 +7,13 @@ use hdk::prelude::*;
 // Called the first time a zome call is made to the cell containing this zome
 #[hdk_extern]
 pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
-    //TODO behave differently for progenitor vs anyone joining
-
+    //is progenitor init exit only tested manually -- tricky to do with tryorama
+    //TODO test manually when ui built - look in playground
+    let properties = Properties::new()?;
     let my_agent_key = agent_info()?.agent_latest_pubkey;
-    let properties = Properties::try_from(dna_info()?.properties).map_err(|_| {
-        wasm_error!(WasmErrorInner::Guest(
-            "Could not deserialize properties".into()
-        ))
-    })?;
+    if my_agent_key != properties.progenitor_dht_address {
+        return Ok(InitCallbackResult::Pass);
+    }
 
     let my_eth_address = properties.progenitor_eth_address;
     let percentage: u32 = properties.percentage_for_consensus;

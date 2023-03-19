@@ -10,13 +10,16 @@ pub struct AuthorityList {
 
 pub fn validate_create_authority_list(
     _action: EntryCreationAction,
-    _authority_list: AuthorityList,
+    authority_list: AuthorityList,
 ) -> ExternResult<ValidateCallbackResult> {
     //TODO 
     //only progenitor
     //must be seq 4
     //no more than one create ever
-    //percentage_for_consensus must be > 50 <= 100
+
+    if authority_list.percentage_for_consensus < 51 || authority_list.percentage_for_consensus > 100 {
+        return Ok(ValidateCallbackResult::Invalid(String::from("Percentage for consensus must be greater than 50 and less than or equal to 100")));
+    }
     Ok(ValidateCallbackResult::Valid)
 }
 pub fn validate_update_authority_list(

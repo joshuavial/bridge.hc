@@ -32,40 +32,42 @@ export function bridgeApp(): AppBundle {
 }
 
 export async function installApp(
-  scenario: Scenario
+  scenario: Scenario,
+  progenitorPubKey: Uint8Array | null,
+  percentageForConsensus: Number = 51,
 ): Promise<[Conductor, AgentApp]> {
   // Set up the app to be installed
   const appBundle = bridgeApp();
 
-  const aliceConductor = await scenario.addConductor();
-  await aliceConductor.attachAppInterface();
-  await aliceConductor.connectAppInterface();
-  const alicePubKey = await aliceConductor.adminWs().generateAgentPubKey();
+  const newConductor = await scenario.addConductor();
+  await newConductor.attachAppInterface();
+  await newConductor.connectAppInterface();
+  const pubKey = await newConductor.adminWs().generateAgentPubKey();
 
   appBundle.manifest.roles.find(
     (r) => r.name === "bridge"
   )!.dna.modifiers = {
     network_seed: "test",
     properties: {
-      progenitor_dht_address: serializeHash(alicePubKey),
+      progenitor_dht_address: serializeHash(progenitorPubKey || pubKey),
       progenitor_eth_address: '0xbananas',
-      percentage_for_consensus: 51,
+      percentage_for_consensus: percentageForConsensus,
     },
   };
 
-   const alice = await aliceConductor.installApp(
+   const agent = await newConductor.installApp(
     { bundle: appBundle },
     {
       installedAppId: "bridge",
-      agentPubKey: alicePubKey,
+      agentPubKey: pubKey,
     }
   );
 
-  await aliceConductor
+  await newConductor
     .adminWs()
     .enableApp({ installed_app_id: "bridge" });
 
-  await aliceConductor.connectAppAgentInterface("bridge");
+  await newConductor.connectAppAgentInterface("bridge");
 
-  return [aliceConductor, alice];
+  return [newConductor, agent];
 }
