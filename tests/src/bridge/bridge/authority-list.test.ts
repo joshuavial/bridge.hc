@@ -38,7 +38,7 @@ test('AuthorityList generated from properties by progenitor', async () => {
 
 test('cannot have authority list with consensus percentage <= 50', async () => {
   await runScenario(async scenario => {
-    const [aliceConductor, alice] = await installApp(scenario, null, 50);
+    const [aliceConductor, alice] = await installApp(scenario, null, 51);
 
     try {
       const forceInit: Record = await aliceConductor.appAgentWs().callZome({

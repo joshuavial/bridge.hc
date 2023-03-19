@@ -1,5 +1,5 @@
 use hdi::prelude::*;
-//use web3::types::Address;
+use super::properties::*;
 
 #[hdk_entry_helper]
 #[derive(Clone, PartialEq)]
@@ -9,14 +9,16 @@ pub struct AuthorityList {
 }
 
 pub fn validate_create_authority_list(
-    _action: EntryCreationAction,
+    action: EntryCreationAction,
     authority_list: AuthorityList,
 ) -> ExternResult<ValidateCallbackResult> {
-    //TODO 
-    //only progenitor
-    //must be seq 4
-    //no more than one create ever
-
+    let properties = Properties::new()?;
+    if action.author().to_owned() != properties.progenitor_dht_address {
+        return Ok(ValidateCallbackResult::Invalid(String::from("Only Progenitor can create an authority list")));
+    }
+    if action.action_seq().to_owned() != 4 {
+        return Ok(ValidateCallbackResult::Invalid(String::from("The authority list must be created immediately at initialisation")));
+    }
     if authority_list.percentage_for_consensus < 51 || authority_list.percentage_for_consensus > 100 {
         return Ok(ValidateCallbackResult::Invalid(String::from("Percentage for consensus must be greater than 50 and less than or equal to 100")));
     }

@@ -18,20 +18,12 @@ pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
     let my_eth_address = properties.progenitor_eth_address;
     let percentage: u32 = properties.percentage_for_consensus;
 
-    //TODO move to proper validation
-    match percentage {
-        x if x > 50 && x <= 100 => {
-            create_entry(EntryTypes::AuthorityList(AuthorityList {
-                percentage_for_consensus: percentage,
-                authorities: vec![(my_agent_key, my_eth_address)],
-            }))?;
+    create_entry(EntryTypes::AuthorityList(AuthorityList {
+        percentage_for_consensus: percentage,
+        authorities: vec![(my_agent_key, my_eth_address)],
+    }))?;
 
-            Ok(InitCallbackResult::Pass)
-        }
-        _ => Ok(InitCallbackResult::Fail(
-            "Percentage for consensus was invalid".into(),
-        )),
-    }
+    Ok(InitCallbackResult::Pass)
 }
 
 #[hdk_extern]
