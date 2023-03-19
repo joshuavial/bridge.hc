@@ -41,7 +41,7 @@ pub fn whoami(_: ()) -> ExternResult<AgentPubKey> {
 }
 
 #[hdk_extern]
-pub fn get_authority_list(_: ()) -> ExternResult<Record> {
+pub fn get_authority_list(_: ()) -> ExternResult<AuthorityList> {
     authority_list::handle_get_authority_list()
 }
 

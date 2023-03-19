@@ -13,7 +13,7 @@ pub fn create_authority_list(authority_list: AuthorityList) -> ExternResult<Reco
     Ok(record)
 }
 
-pub fn handle_get_authority_list() -> ExternResult<Record> {
+pub fn handle_get_authority_list() -> ExternResult<AuthorityList> {
     let progenitor_pub_key = Properties::new()?.progenitor_dht_address;
     let auth_list_entry_type: EntryType = UnitEntryTypes::AuthorityList.try_into()?;
     let filter = ChainQueryFilter::new().entry_type(auth_list_entry_type).include_entries(true);
@@ -27,7 +27,10 @@ pub fn handle_get_authority_list() -> ExternResult<Record> {
         let (_, action_hash) = activity.valid_activity.first().unwrap();
         let details = get_details(action_hash.to_owned(), GetOptions::default())?;
         if let Details::Record(record_detail) = details.unwrap() {
-            Ok(record_detail.record)
+            match record_detail.record.entry() {
+                RecordEntry::Present(entry) => Ok(AuthorityList::try_from(entry)?),
+                _ => Err(wasm_error!("Could not access the authority list"))
+            }
         } else {
             Err(wasm_error!("Could not access the authority list"))
         }
