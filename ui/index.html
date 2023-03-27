@@ -10,7 +10,13 @@
 <body>
   <holochain-app></holochain-app>
 
-  <script type="module" src="./src/holochain-app.ts"></script>
+  <script type="module">
+    import '@shoelace-style/shoelace/dist/themes/light.css';
+    import './src/holochain-app.ts';
+    // import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path';
+
+    // setBasePath('shoelace');
+  </script>
 </body>
 
 </html>

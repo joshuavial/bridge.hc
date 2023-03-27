@@ -7,6 +7,7 @@ import {
 } from '@holochain/client';
 import { provide } from '@lit-labs/context';
 
+import '@shoelace-style/shoelace/dist/components/spinner/spinner.js';
 
 import "./components/header-component";
 import "./components/footer-component";
@@ -32,7 +33,7 @@ export class HolochainApp extends LitElement {
   render() {
     if (this.loading)
       return html`
-        <mwc-circular-progress indeterminate></mwc-circular-progress>
+      <sl-spinner></sl-spinner>
       `;
 
     return html`
