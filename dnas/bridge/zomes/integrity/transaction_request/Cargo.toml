@@ -8,9 +8,10 @@ crate-type = ["cdylib", "rlib"]
 name = "hc_zome_transaction_requests_integrity"
 
 [dependencies]
-chrono = {version = "0.4", features = ["serde"]}
-derive_more = "0"
-serde = "1"
+hdk = { workspace = true }
+
+hdi = { workspace = true }
+
+serde = { workspace = true }
 
 bridge_integrity = {path = "../bridge"}
-hdk = {version = "0.0.127", features = ["encoding"]}

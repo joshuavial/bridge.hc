@@ -7,19 +7,17 @@ mod utils;
 
 pub use handlers::*;
 
-entry_defs![TransactionRequest::entry_def()];
-
 #[hdk_extern]
 pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
-    let mut functions = GrantedFunctions::new();
-    functions.insert((zome_info()?.name, "recv_remote_signal".into()));
+    // let mut functions = GrantedFunctions::new();
+    // functions.insert((zome_info()?.name, "recv_remote_signal".into()));
 
-    let grant = ZomeCallCapGrant {
-        access: CapAccess::Unrestricted,
-        functions,
-        tag: "".into(),
-    };
-    create_cap_grant(grant)?;
+    // let grant = ZomeCallCapGrant {
+    //     access: CapAccess::Unrestricted,
+    //     functions,
+    //     tag: "".into(),
+    // };
+    // create_cap_grant(grant)?;
 
     Ok(InitCallbackResult::Pass)
 }

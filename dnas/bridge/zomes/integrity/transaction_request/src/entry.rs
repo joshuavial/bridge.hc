@@ -1,7 +1,7 @@
 use hdk::prelude::holo_hash::*;
 use hdk::prelude::*;
 
-#[hdk_entry(id = "transaction_request")]
+#[hdk_entry_helper]
 #[derive(Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct TransactionRequest {
@@ -19,7 +19,7 @@ impl TransactionRequest {
         } else if my_pub_key.eq(&self.recipient_pub_key) {
             Ok(self.spender_pub_key.clone())
         } else {
-            Err(WasmError::Guest(String::from(
+            Err(wasm_error!(String::from(
                 "I don't participate in this TransactionRequest",
             )))
         }

@@ -3,19 +3,17 @@ use bridge_integrity::Transaction;
 use hc_zome_transaction_requests_integrity::{call_transactions, TransactionRequest};
 use hdk::prelude::*;
 
-pub fn build_transaction(transaction_request_element: Element) -> ExternResult<Transaction> {
-    let transaction_request: TransactionRequest = transaction_request_element
-        .entry()
-        .to_app_option()?
-        .ok_or(WasmError::Guest(String::from(
-            "Malformed transaction_request",
-        )))?;
+pub fn build_transaction(transaction_request_element: Record) -> ExternResult<Transaction> {
+    // let transaction_request: TransactionRequest = transaction_request_element
+    //     .entry()
+    //     .to_app_option()?
+    //     .ok_or(wasm_error!(String::from("Malformed transaction_request",)))?;
 
-    let spender = transaction_request.spender_pub_key.clone();
-    let recipient = transaction_request.recipient_pub_key.clone();
+    // let spender = transaction_request.spender_pub_key.clone();
+    // let recipient = transaction_request.recipient_pub_key.clone();
 
-    let spender_latest_transaction = get_latest_transaction_for_agent(spender.into())?;
-    let recipient_latest_transaction = get_latest_transaction_for_agent(recipient.into())?;
+    // let spender_latest_transaction = get_latest_transaction_for_agent(spender.into())?;
+    // let recipient_latest_transaction = get_latest_transaction_for_agent(recipient.into())?;
 
     unimplemented!()
     // let transaction = Transaction::from_previous_transactions(

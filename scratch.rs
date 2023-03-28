@@ -31,11 +31,11 @@ use hdk::prelude::*;
 #[serde(rename_all = "camelCase")]
 pub struct TransactionParty {
     pub agent_pub_key: AgentPubKeyB64,
-    pub previous_transaction_hash: Option<HeaderHashB64>,
+    pub previous_transaction_hash: Option<ActionHashB64>,
     pub resulting_balance: f64,
 }
 
-#[hdk_entry(id = "transaction", visibility = "public")]
+#[hdk_entry_helper]
 #[derive(Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Transaction {
@@ -52,15 +52,15 @@ impl Transaction {
                 let transaction = Transaction::try_from(entry_bytes.into_sb())?;
                 Ok(transaction)
             }
-            _ => Err(WasmError::Guest(String::from("Malformed entry"))),
+            _ => Err(wasm_error!(String::from("Malformed entry"))),
         }
     }
 
     pub fn from_previous_transactions(
         spender: AgentPubKey,
         recipient: AgentPubKey,
-        previous_spender_transaction: Option<(HeaderHashB64, Transaction)>,
-        previous_recipient_transaction: Option<(HeaderHashB64, Transaction)>,
+        previous_spender_transaction: Option<(ActionHashB64, Transaction)>,
+        previous_recipient_transaction: Option<(ActionHashB64, Transaction)>,
         amount: f64,
         info: SerializedBytes,
     ) -> ExternResult<Transaction> {
@@ -103,7 +103,7 @@ impl Transaction {
         } else if AgentPubKey::from(self.recipient.agent_pub_key.clone()).eq(agent_pub_key) {
             Ok(self.recipient.clone())
         } else {
-            Err(WasmError::Guest(String::from(
+            Err(wasm_error!(String::from(
                 "This agent did not participate in the transaction",
             )))
         }
@@ -117,7 +117,7 @@ impl Transaction {
         } else if my_pub_key.eq(&self.recipient.agent_pub_key) {
             Ok(self.spender.clone())
         } else {
-            Err(WasmError::Guest(String::from(
+            Err(wasm_error!(String::from(
                 "I don't participate in this Transaction",
             )))
         }

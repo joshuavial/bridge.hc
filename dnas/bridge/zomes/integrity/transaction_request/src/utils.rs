@@ -6,23 +6,28 @@ where
     I: serde::Serialize + std::fmt::Debug,
     R: serde::Serialize + std::fmt::Debug + DeserializeOwned,
 {
-    let response = call(
-        CallTargetCell::Local,
-        "transactions".into(),
-        fn_name.into(),
-        None,
-        payload,
-    )?;
+    unimplemented!()
+    // let response = call(
+    //     CallTargetCell::Local,
+    //     "transactions".into(),
+    //     fn_name.into(),
+    //     None,
+    //     payload,
+    // )?;
 
-    let result = match response {
-        ZomeCallResponse::Ok(result) => Ok(result),
-        _ => Err(WasmError::Guest(format!(
-            "Error creating the transaction: {:?}",
-            response
-        ))),
-    }?;
+    // let result = match response {
+    //     ZomeCallResponse::Ok(result) => Ok(result),
+    //     _ => Err(wasm_error!(format!(
+    //         "Error creating the transaction: {:?}",
+    //         response
+    //     ))),
+    // }?;
 
-    let transaction_hash: R = result.decode()?;
+    // let transaction_hash: R = result.decode().map_err(|_| {
+    //     wasm_error!(WasmErrorInner::Guest(
+    //         "Error decoding transaction hash".into()
+    //     ))
+    // })?;
 
-    Ok(transaction_hash)
+    // Ok(transaction_hash)
 }
