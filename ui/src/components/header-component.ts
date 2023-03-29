@@ -13,10 +13,15 @@ class HeaderComponent extends LitElement {
     :host {
         text-align: left;
         color: #1d6fa5;
-        box-shadow: 1px 1px #1d6fa5;
-        margin: 10px;
-
+        border: 2px solid #1d6fa5;
+        border-top: 0;
+        border-left: 0;
+        flex-grow: 0;
         display: flex;
+    }
+
+    h1 {
+      margin: 0;
     }
 
   `;

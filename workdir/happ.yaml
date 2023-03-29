@@ -11,7 +11,10 @@ roles:
       bundled: "../dnas/bridge/workdir/bridge.dna"
       modifiers:
         network_seed: ~
-        properties: ~
+        properties:
+          progenitor_dht_address: uhCAkDyk4nKpq9Hv1EuG1eOGYX1ghn7EOrZG19LWw12E4IzuC9-ih
+          progenitor_eth_address: 0xbananas
+          percentage_for_consensus: 51
         origin_time: ~
         quantum_time: ~
       version: ~

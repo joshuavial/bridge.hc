@@ -11,7 +11,9 @@ class MainComponent extends LitElement {
 
   static styles = css`
     :host {
-      background-color: #f3f3f3
+      background-color: #f3f3f3;
+      flex-grow: 7;
+      display: flex;
     }
   `;
 }

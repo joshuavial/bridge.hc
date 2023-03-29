@@ -82,7 +82,7 @@ Entries
 - authorities stake funds in smart contract which is used as collatoral for bad authorisations, design system for 000s of authorities and use staked collatoral of authorities as a throttle on how much outflow they can authorise.  
 
 
-# Brige.hc
+# Bridge.hc
 
 ## Environment Setup
 
@@ -130,8 +130,8 @@ To package the web happ:
 npm run package
 ```
 
-You'll have the `brige.hc.webhapp` in `workdir`. This is what you should distribute so that the Holochain Launcher can install it.
-You will also have its subcomponent `brige.hc.happ` in the same folder`.
+You'll have the `bridge.hc.webhapp` in `workdir`. This is what you should distribute so that the Holochain Launcher can install it.
+You will also have its subcomponent `bridge.hc.happ` in the same folder`.
 
 ## Documentation
 

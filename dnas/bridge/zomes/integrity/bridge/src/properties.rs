@@ -11,7 +11,12 @@ pub struct Properties {
 
 impl Properties {
     pub fn new() -> ExternResult<Self> {
-        Properties::try_from(dna_info()?.properties)
-            .map_err(|_| wasm_error!(WasmErrorInner::Guest("Malformed properties".into())))
+        warn!("PROPERTIES: {:#?}", dna_info()?.properties);
+        Properties::try_from(dna_info()?.properties).map_err(|e| {
+            wasm_error!(WasmErrorInner::Guest(format!(
+                "Malformed properties: {:?}",
+                e
+            )))
+        })
     }
 }

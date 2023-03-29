@@ -11,10 +11,10 @@
   "dependencies": {
     "@holochain/client": "^0.12.2",
     "@lit-labs/context": "^0.2.0",
-    "@lit-labs/task": "^2.0.0",
-    "@msgpack/msgpack": "^2.7.2",
-    "@vaadin/date-time-picker": "^23.2.8",
+    "@lit-labs/task": "^2.1.0",
+    "@msgpack/msgpack": "^2.8.0",
     "@shoelace-style/shoelace": "^2.3.0",
+    "@vaadin/date-time-picker": "^23.2.8",
     "lit": "^2.6.1"
   },
   "devDependencies": {
