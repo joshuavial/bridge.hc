@@ -5,7 +5,8 @@ import { customElement } from 'lit/decorators.js';
 class HeaderComponent extends LitElement {
   render() {
     return html`
-      <h1>HoloScan</h1>
+        <h1>HoloScan</h1>
+        <slot style="display: flex"></slot>
     `;
   }
 
@@ -18,7 +19,8 @@ class HeaderComponent extends LitElement {
         border-left: 0;
         flex-grow: 0;
         display: flex;
-    }
+        justify-content: space-between;
+      } 
 
     h1 {
       margin: 0;

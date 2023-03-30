@@ -10,6 +10,10 @@ integrity:
       hash: ~
       bundled: "../../../target/wasm32-unknown-unknown/release/bridge_integrity.wasm"
       dependencies: ~
+    - name: profiles_integrity
+      hash: ~
+      bundled: "../../../target/wasm32-unknown-unknown/release/profiles_integrity.wasm"
+      dependencies: ~
 coordinator:
   zomes:
     - name: bridge
@@ -17,3 +21,8 @@ coordinator:
       bundled: "../../../target/wasm32-unknown-unknown/release/bridge.wasm"
       dependencies:
         - name: bridge_integrity
+    - name: profiles
+      hash: ~
+      bundled: "../../../target/wasm32-unknown-unknown/release/profiles.wasm"
+      dependencies:
+        - name: profiles_integrity
