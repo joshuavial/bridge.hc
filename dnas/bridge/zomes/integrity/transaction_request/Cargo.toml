@@ -1,0 +1,17 @@
+[package]
+edition = "2021"
+name = "hc_zome_transaction_requests_integrity"
+version = "0.0.1"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+name = "hc_zome_transaction_requests_integrity"
+
+[dependencies]
+hdk = { workspace = true }
+
+hdi = { workspace = true }
+
+serde = { workspace = true }
+
+bridge_integrity = {path = "../bridge"}
