@@ -12,25 +12,25 @@ pub fn create_transaction_request(
     input: CreateTransactionRequestInput,
 ) -> ExternResult<(ActionHashB64, TransactionRequest)> {
     let my_pub_key = agent_info()?.agent_latest_pubkey;
-
+    warn!("{:?}", my_pub_key.clone());
     if AgentPubKey::from(input.counterparty_pub_key.clone()).eq(&my_pub_key) {
         return Err(wasm_error!(String::from(
             "An agent cannot create an offer to themselves",
         )));
     }
 
-    let transaction_request = match input.transaction_request_type {
-        TransactionRequestType::Send => TransactionRequest {
-            spender_pub_key: AgentPubKeyB64::from(my_pub_key.clone()),
-            recipient_pub_key: input.counterparty_pub_key.clone(),
-            amount: input.amount,
-        },
-        TransactionRequestType::Receive => TransactionRequest {
-            spender_pub_key: input.counterparty_pub_key.clone(),
-            recipient_pub_key: AgentPubKeyB64::from(my_pub_key.clone()),
-            amount: input.amount,
-        },
-    };
+    // let transaction_request = match input.transaction_request_type {
+    //     TransactionRequestType::Send => TransactionRequest {
+    //         spender_pub_key: AgentPubKeyB64::from(my_pub_key.clone()),
+    //         recipient_pub_key: input.counterparty_pub_key.clone(),
+    //         amount: input.amount,
+    //     },
+    //     TransactionRequestType::Receive => TransactionRequest {
+    //         spender_pub_key: input.counterparty_pub_key.clone(),
+    //         recipient_pub_key: AgentPubKeyB64::from(my_pub_key.clone()),
+    //         amount: input.amount,
+    //     },
+    // };
 
     // let header_hash = create_entry(&transaction_request)?;
 
