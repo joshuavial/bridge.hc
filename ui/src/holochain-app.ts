@@ -4,10 +4,17 @@ import {
   AppAgentWebsocket,
   ActionHash,
   AppAgentClient,
+  AgentPubKey,
 } from '@holochain/client';
 import { provide } from '@lit-labs/context';
-import '@material/mwc-circular-progress';
 
+import '@shoelace-style/shoelace/dist/components/spinner/spinner.js';
+
+import "./components/header-component";
+import "./components/footer-component";
+import "./components/main-component";
+
+import { Task } from '@lit-labs/task';
 import { clientContext } from './contexts';
 
 @customElement('holochain-app')
@@ -18,9 +25,17 @@ export class HolochainApp extends LitElement {
   @property({ type: Object })
   client!: AppAgentClient;
 
+  _init = new Task(this, () => this.client.callZome({
+    cap_secret: null,
+    role_name: 'bridge',
+    zome_name: 'bridge',
+    fn_name: 'wohami',
+    payload: null,
+}) as Promise<AgentPubKey>, () => []);
+
   async firstUpdated() {
     // We pass '' as url because it will dynamically be replaced in launcher environments
-    this.client = await AppAgentWebsocket.connect('', 'brige.hc');
+    this.client = await AppAgentWebsocket.connect('', 'bridge.hc');
 
     this.loading = false;
   }
@@ -28,32 +43,13 @@ export class HolochainApp extends LitElement {
   render() {
     if (this.loading)
       return html`
-        <mwc-circular-progress indeterminate></mwc-circular-progress>
+        <sl-spinner></sl-spinner>
       `;
 
     return html`
-      <main>
-        <h1>Brige.hc</h1>
-
-        <div id="content" style="display: flex; flex-direction: column; flex: 1;">
-          <h2>EDIT ME! Add the components of your app here.</h2>
-          
-          <span>Look in the <code>ui/src/DNA/ZOME</code> folders for UI elements that are generated with <code>hc scaffold entry-type</code>, <code>hc scaffold collection</code> and <code>hc scaffold link-type</code> and add them here as appropriate.</span>
-        
-          <span>For example, if you have scaffolded a "todos" dna, a "todos" zome, a "todo_item" entry type, and a collection called "all_todos", you might want to add an element here to create and list your todo items, with the generated <code>ui/src/todos/todos/all-todos.ts</code> and <code>ui/src/todos/todos/create-todo.ts</code> elements.</span>
-          
-          <span>So, to use those elements here:</span>
-          <ol>
-            <li>Import the elements with:
-              <pre>
-import './todos/todos/all-todos';
-import './todos/todos/create-todo';
-              </pre>
-            </li>
-            <li>Replace this "EDIT ME!" section with <code>&lt;create-todo&gt;&lt;/create-todo&gt;&lt;all-todos&gt;&lt;/all-todos&gt;</code>.</li>
-          </ol>
-        </div>
-      </main>
+      <header-component></header-component>
+      <main-component></main-component>
+      <footer-component></footer-component>
     `;
   }
 
@@ -65,24 +61,16 @@ import './todos/todos/create-todo';
       align-items: center;
       justify-content: flex-start;
       font-size: calc(10px + 2vmin);
+      font-family: "Roboto", sans-serif;
       color: #1a2b42;
-      max-width: 960px;
       margin: 0 auto;
       text-align: center;
-      background-color: var(--lit-element-background-color);
+      background-color: #fefefe;
     }
-
-    main {
-      flex-grow: 1;
-    }
-
-    .app-footer {
-      font-size: calc(12px + 0.5vmin);
-      align-items: center;
-    }
-
-    .app-footer a {
-      margin-left: 5px;
+    :host > * {
+      width: 100%;
+      padding: 0;
+      margin: 0;
     }
   `;
 }

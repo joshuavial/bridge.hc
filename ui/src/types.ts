@@ -38,11 +38,8 @@ export type BridgeSignal = {
 export type EntryTypes =
  | ({  type: 'AuthorityList'; } & AuthorityList);
 
-
-
 export interface AuthorityList { 
   percentage_for_consensus: number;
-
   authorities: Array<string>;
 }
 
