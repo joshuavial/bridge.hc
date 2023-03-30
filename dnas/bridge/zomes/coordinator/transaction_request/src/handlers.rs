@@ -1,9 +1,9 @@
 use std::collections::BTreeMap;
 
 use bridge_integrity::Transaction;
-use hc_zome_transaction_requests_integrity::{call_transactions, CreateTransactionRequestInput};
 use hdk::prelude::holo_hash::*;
 use hdk::prelude::*;
+use transaction_requests_integrity::{call_transactions, CreateTransactionRequestInput};
 
 use crate::{utils::build_transaction, TransactionRequest, TransactionRequestType};
 

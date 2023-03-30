@@ -51,7 +51,7 @@ test('Given an agent, Alice, When Alice tries to create a transaction request to
     try {
         const attemptCreateRequest: any = await aliceConductor.appAgentWs().callZome({
             role_name: "bridge",
-            zome_name: "transaction_request",
+            zome_name: "transaction_requests",
             fn_name: "create_transaction_request",
             payload: transactionRequestInput,
         });
