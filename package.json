@@ -21,5 +21,9 @@
   },
   "engines": {
     "npm": ">=7.0.0"
+  },
+  "dependencies": {
+    "@holochain-open-dev/profiles": "^0.12.4",
+    "@holochain-open-dev/stores": "^0.4.7"
   }
 }
