@@ -12,7 +12,7 @@ import {
   DeleteLink
 } from '@holochain/client';
 
-export type BridgeSignal = {
+export type ProfilesSignal = {
   type: 'EntryCreated';
   action: SignedActionHashed<Create>;
   app_entry: EntryTypes;
@@ -35,15 +35,4 @@ export type BridgeSignal = {
   link_type: string;
 };
 
-export type EntryTypes =
- | ({  type: 'AuthorityList'; } & AuthorityList);
-
-
-
-export interface AuthorityList { 
-  percentage_for_consensus: number;
-
-  authorities: Array<string>;
-}
-
-
+export type EntryTypes = {};

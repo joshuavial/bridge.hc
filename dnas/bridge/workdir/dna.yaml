@@ -3,14 +3,20 @@ manifest_version: "1"
 name: bridge
 integrity:
   network_seed: ~
-  properties:
-    progenitor_eth_address: 3432143
-    percentage_for_consensus: 51
+  properties: ~
   origin_time: 1679169690399947
   zomes:
     - name: bridge_integrity
       hash: ~
       bundled: "../../../target/wasm32-unknown-unknown/release/bridge_integrity.wasm"
+      dependencies: ~
+    - name: profiles_integrity
+      hash: ~
+      bundled: "../../../target/wasm32-unknown-unknown/release/profiles_integrity.wasm"
+      dependencies: ~
+    - name: transaction_requests_integrity
+      hash: ~
+      bundled: "../../../target/wasm32-unknown-unknown/release/transaction_requests_integrity.wasm"
       dependencies: ~
 coordinator:
   zomes:
@@ -19,3 +25,13 @@ coordinator:
       bundled: "../../../target/wasm32-unknown-unknown/release/bridge.wasm"
       dependencies:
         - name: bridge_integrity
+    - name: profiles
+      hash: ~
+      bundled: "../../../target/wasm32-unknown-unknown/release/profiles.wasm"
+      dependencies:
+        - name: profiles_integrity
+    - name: transaction_requests
+      hash: ~
+      bundled: "../../../target/wasm32-unknown-unknown/release/transaction_requests.wasm"
+      dependencies:
+        - name: profiles_integrity

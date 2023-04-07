@@ -1,0 +1,17 @@
+[package]
+edition = "2021"
+name = "transaction_requests"
+version = "0.0.1"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+name = "transaction_requests"
+
+[dependencies]
+hdk = { workspace = true }
+
+serde = { workspace = true }
+
+bridge_integrity = { workspace = true }
+
+transaction_requests_integrity = {path = "../../integrity/transaction_request"}
