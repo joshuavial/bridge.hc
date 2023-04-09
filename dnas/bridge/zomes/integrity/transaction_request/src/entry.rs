@@ -1,5 +1,7 @@
 use hdk::prelude::holo_hash::*;
 use hdk::prelude::*;
+use crate::types::UIEnum;
+use std::fmt;
 
 #[hdk_entry_helper]
 #[derive(Clone)]
@@ -26,8 +28,29 @@ impl TransactionRequest {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(from = "UIEnum")]
+#[serde(into = "UIEnum")]
 pub enum TransactionRequestType {
     Send,
     Receive,
+}
+impl From<UIEnum> for TransactionRequestType {
+    fn from(ui_enum: UIEnum) -> Self {
+        match ui_enum.0.as_str() {
+            "Send" => Self::Send,
+            "Receive" => Self::Receive,
+            _ => Self::Send,
+        }
+    }
+}
+impl From<TransactionRequestType> for UIEnum {
+    fn from(request_type: TransactionRequestType) -> Self {
+        Self(request_type.to_string())
+    }
+}
+impl fmt::Display for TransactionRequestType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
 }
