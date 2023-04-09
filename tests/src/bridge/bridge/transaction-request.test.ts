@@ -12,14 +12,14 @@ enum TransactionRequestType {
 }
 
 interface CreateTransactionRequestInput {
-    transaction_request_type: TransactionRequestType,
-    counterparty_pub_key: AgentPubKeyB64,
+    transactionRequestType: String, //TransactionRequestType
+    counterpartyPubKey: AgentPubKeyB64,
     amount: Number,
 }
 
 interface TransactionRequest {
-    spender_pub_key: AgentPubKeyB64,
-    recipient_pub_key: AgentPubKeyB64,
+    spenderPubKey: AgentPubKeyB64,
+    recipientPubKey: AgentPubKeyB64,
     amount: Number,
 }
 
@@ -44,14 +44,14 @@ test('Given an agent, Alice, When Alice tries to create a transaction request to
     // assert.equal(transactionList.length, 0);
 
     let transactionRequestInput : CreateTransactionRequestInput = {
-        transaction_request_type: TransactionRequestType.Send,
-        counterparty_pub_key: (alice.agentPubKey as unknown) as AgentPubKeyB64,
+        transactionRequestType: "Send", // TODO: fix error serializing enums
+        counterpartyPubKey: (alice.agentPubKey as unknown) as AgentPubKeyB64,
         amount: 10.0,
     };
     try {
         const attemptCreateRequest: any = await aliceConductor.appAgentWs().callZome({
             role_name: "bridge",
-            zome_name: "transaction_request",
+            zome_name: "transaction_requests",
             fn_name: "create_transaction_request",
             payload: transactionRequestInput,
         });

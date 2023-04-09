@@ -1,6 +1,6 @@
 use hdk::prelude::*;
 
-use hc_zome_transaction_requests_integrity::*;
+use transaction_requests_integrity::*;
 
 mod handlers;
 mod utils;

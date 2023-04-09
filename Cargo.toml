@@ -15,13 +15,13 @@ serde = "1"
 [workspace.dependencies.bridge]
 path = "dnas/bridge/zomes/coordinator/bridge"
 
-[workspace.dependencies.hc_zome_transaction_requests_coordinator]
-path = "dnas/bridge/zomes/coordinator/transaction_request"
-
 [workspace.dependencies.bridge_integrity]
 path = "dnas/bridge/zomes/integrity/bridge"
 
-[workspace.dependencies.hc_zome_transaction_requests_integrity]
+[workspace.dependencies.transaction_requests]
+path = "dnas/bridge/zomes/coordinator/transaction_request"
+
+[workspace.dependencies.transaction_requests_integrity]
 path = "dnas/bridge/zomes/integrity/transaction_request"
 
 [workspace.dependencies.profiles]

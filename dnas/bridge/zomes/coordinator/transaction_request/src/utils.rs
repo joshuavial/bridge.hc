@@ -1,7 +1,7 @@
 use crate::holo_hash::{AgentPubKeyB64, AnyDhtHashB64};
 use bridge_integrity::Transaction;
-use hc_zome_transaction_requests_integrity::{call_transactions, TransactionRequest};
 use hdk::prelude::*;
+use transaction_requests_integrity::{call_transactions, TransactionRequest};
 
 pub fn build_transaction(transaction_request_element: Record) -> ExternResult<Transaction> {
     // let transaction_request: TransactionRequest = transaction_request_element

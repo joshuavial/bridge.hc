@@ -9,6 +9,9 @@
     "package": "npm run build && cd dist && bestzip ../dist.zip *"
   },
   "dependencies": {
+    "@holochain-open-dev/elements": "^0.3.11",
+    "@holochain-open-dev/profiles": "^0.12.4",
+    "@holochain-open-dev/stores": "^0.4.7",
     "@holochain/client": "^0.12.2",
     "@lit-labs/context": "^0.2.0",
     "@lit-labs/task": "^2.1.0",

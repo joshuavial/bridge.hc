@@ -699,26 +699,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "hc_zome_transaction_requests_coordinator"
-version = "0.0.1"
-dependencies = [
- "bridge_integrity",
- "hc_zome_transaction_requests_integrity",
- "hdk",
- "serde",
-]
-
-[[package]]
-name = "hc_zome_transaction_requests_integrity"
-version = "0.0.1"
-dependencies = [
- "bridge_integrity",
- "hdi",
- "hdk",
- "serde",
-]
-
-[[package]]
 name = "hdi"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1878,6 +1858,26 @@ checksum = "24eb03ba0eab1fd845050058ce5e616558e8f8d8fca633e6b163fe25c797213a"
 dependencies = [
  "once_cell",
  "valuable",
+]
+
+[[package]]
+name = "transaction_requests"
+version = "0.0.1"
+dependencies = [
+ "bridge_integrity",
+ "hdk",
+ "serde",
+ "transaction_requests_integrity",
+]
+
+[[package]]
+name = "transaction_requests_integrity"
+version = "0.0.1"
+dependencies = [
+ "bridge_integrity",
+ "hdi",
+ "hdk",
+ "serde",
 ]
 
 [[package]]
