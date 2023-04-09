@@ -7,12 +7,12 @@ import { decode } from '@msgpack/msgpack';
 import {installApp} from './utils.js';
 
 enum TransactionRequestType {
-    Send,
-    Receive
+    Send = "Send",
+    Receive = "Receive"
 }
 
 interface CreateTransactionRequestInput {
-    transactionRequestType: String, //TransactionRequestType
+    transactionRequestType: TransactionRequestType,
     counterpartyPubKey: AgentPubKeyB64,
     amount: Number,
 }
@@ -44,7 +44,7 @@ test('Given an agent, Alice, When Alice tries to create a transaction request to
     // assert.equal(transactionList.length, 0);
 
     let transactionRequestInput : CreateTransactionRequestInput = {
-        transactionRequestType: "Send", // TODO: fix error serializing enums
+        transactionRequestType: TransactionRequestType.Send, // TODO: fix error serializing enums
         counterpartyPubKey: (alice.agentPubKey as unknown) as AgentPubKeyB64,
         amount: 10.0,
     };
