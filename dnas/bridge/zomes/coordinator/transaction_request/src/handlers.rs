@@ -187,28 +187,27 @@ pub fn accept_transaction_request(
 // }
 
 fn query_my_transactions() -> ExternResult<BTreeMap<ActionHashB64, Transaction>> {
-    unimplemented!()
-    // let response = call_remote(
-    //     agent_info().unwrap().agent_initial_pubkey,
-    //     "transactions".into(),
-    //     "query_my_transactions".into(),
-    //     None,
-    //     (),
-    // )?;
+    let response = call_remote(
+        agent_info().unwrap().agent_initial_pubkey,
+        ZomeName::from("transaction_requests".to_string()),
+        "query_my_transactions".into(),
+        None,
+        (),
+    )?;
 
-    // let result = match response {
-    //     ZomeCallResponse::Ok(result) => Ok(result),
-    //     _ => Err(wasm_error!(format!(
-    //         "Error querying my transactions: {:?}",
-    //         response
-    //     ))),
-    // }?;
+    let result = match response {
+        ZomeCallResponse::Ok(result) => Ok(result),
+        _ => Err(wasm_error!(format!(
+            "Error querying my transactions: {:?}",
+            response
+        ))),
+    }?;
 
-    // let my_transactions: BTreeMap<ActionHashB64, Transaction> = result
-    //     .decode()
-    //     .map_err(|_| wasm_error!(WasmErrorInner::Guest("Error decoding transactions".into())))?;
+    let my_transactions: BTreeMap<ActionHashB64, Transaction> = result
+        .decode()
+        .map_err(|_| wasm_error!(WasmErrorInner::Guest("Error decoding transactions".into())))?;
 
-    // Ok(my_transactions)
+    Ok(my_transactions)
 }
 
 // #[hdk_extern]

@@ -35,16 +35,16 @@ test('Given an agent, Alice, When Alice tries to create a transaction request to
       payload: null,
     });
 
-    // const transactionList: any = await aliceConductor.appAgentWs().callZome({
-    //   role_name: "bridge",
-    //   zome_name: "bridge",
-    //   fn_name: "query_my_transactions",
-    //   payload: null,
-    // });
-    // assert.equal(transactionList.length, 0);
+    const transactionList: any = await aliceConductor.appAgentWs().callZome({
+      role_name: "bridge",
+      zome_name: "bridge",
+      fn_name: "query_my_transactions",
+      payload: null,
+    });
+    assert.equal(Object.keys(transactionList).length, 0);
 
     let transactionRequestInput : CreateTransactionRequestInput = {
-        transactionRequestType: TransactionRequestType.Send, // TODO: fix error serializing enums
+        transactionRequestType: TransactionRequestType.Send,
         counterpartyPubKey: (alice.agentPubKey as unknown) as AgentPubKeyB64,
         amount: 10.0,
     };
@@ -63,13 +63,13 @@ test('Given an agent, Alice, When Alice tries to create a transaction request to
         assert.ok(1);
       }
 
-    // const transactionListAfter: any = await aliceConductor.appAgentWs().callZome({
-    //   role_name: "bridge",
-    //   zome_name: "bridge",
-    //   fn_name: "query_my_transactions",
-    //   payload: null,
-    // });
-    // assert.equal(transactionListAfter.length, 0);
+    const transactionListAfter: any = await aliceConductor.appAgentWs().callZome({
+      role_name: "bridge",
+      zome_name: "bridge",
+      fn_name: "query_my_transactions",
+      payload: null,
+    });
+    assert.equal(Object.keys(transactionListAfter).length, 0);
   });
 });
 

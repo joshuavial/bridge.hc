@@ -1,3 +1,4 @@
+pub mod transaction;
 pub mod authority_list;
 pub mod utils;
 
