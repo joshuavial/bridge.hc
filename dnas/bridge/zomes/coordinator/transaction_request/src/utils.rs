@@ -1,5 +1,5 @@
 use crate::holo_hash::{AgentPubKeyB64, AnyDhtHashB64};
-use bridge_integrity::Transaction;
+use types::Transaction;
 use hdk::prelude::*;
 use transaction_requests_integrity::{call_transactions, TransactionRequest};
 

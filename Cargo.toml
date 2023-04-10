@@ -29,3 +29,6 @@ path = "dnas/bridge/zomes/coordinator/profiles"
 
 [workspace.dependencies.profiles_integrity]
 path = "dnas/bridge/zomes/integrity/profiles"
+
+[workspace.dependencies.types]
+path = "dnas/types"

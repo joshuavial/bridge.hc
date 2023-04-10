@@ -14,4 +14,6 @@ hdi = { workspace = true }
 
 serde = { workspace = true }
 
-bridge_integrity = {path = "../bridge"}
+bridge_integrity = { workspace = true }
+
+types = { workspace = true }
