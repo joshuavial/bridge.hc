@@ -1,11 +1,8 @@
 use std::collections::BTreeMap;
 
-use bridge_integrity::Transaction;
-use hdk::prelude::holo_hash::*;
-use hdk::prelude::*;
-use transaction_requests_integrity::{call_transactions, CreateTransactionRequestInput};
-
-use crate::{utils::build_transaction, TransactionRequest, TransactionRequestType};
+use bridge_integrity::{Transaction};
+use hdk::prelude::{*, holo_hash::*};
+use transaction_requests_integrity::{LinkTypes, CreateTransactionRequestInput, EntryTypes, TransactionRequest, TransactionRequestType};
 
 #[hdk_extern]
 pub fn create_transaction_request(
@@ -19,36 +16,35 @@ pub fn create_transaction_request(
         )));
     }
 
-    // let transaction_request = match input.transaction_request_type {
-    //     TransactionRequestType::Send => TransactionRequest {
-    //         spender_pub_key: AgentPubKeyB64::from(my_pub_key.clone()),
-    //         recipient_pub_key: input.counterparty_pub_key.clone(),
-    //         amount: input.amount,
-    //     },
-    //     TransactionRequestType::Receive => TransactionRequest {
-    //         spender_pub_key: input.counterparty_pub_key.clone(),
-    //         recipient_pub_key: AgentPubKeyB64::from(my_pub_key.clone()),
-    //         amount: input.amount,
-    //     },
-    // };
+    let transaction_request = match input.transaction_request_type {
+        TransactionRequestType::Send => TransactionRequest {
+            spender_pub_key: AgentPubKeyB64::from(my_pub_key.clone()),
+            recipient_pub_key: input.counterparty_pub_key.clone(),
+            amount: input.amount,
+        },
+        TransactionRequestType::Receive => TransactionRequest {
+            spender_pub_key: input.counterparty_pub_key.clone(),
+            recipient_pub_key: AgentPubKeyB64::from(my_pub_key.clone()),
+            amount: input.amount,
+        },
+    };
 
-    // let header_hash = create_entry(&transaction_request)?;
+    let action_hash = create_entry(EntryTypes::TransactionRequest(transaction_request.clone()))?;
 
-    // create_link(
-    //     EntryHash::from(my_pub_key),
-    //     header_hash.clone().retype(hash_type::Entry),
-    //     HdkLinkType::Any,
-    //     (),
-    // )?;
-    // create_link(
-    //     EntryHash::from(AgentPubKey::from(transaction_request.get_counterparty()?)),
-    //     header_hash.clone().retype(hash_type::Entry),
-    //     HdkLinkType::Any,
-    //     (),
-    // )?;
+    create_link(
+        AnyDhtHash::from(my_pub_key),
+        action_hash.clone(),
+        LinkTypes::AgentPubKeyToTransactionRequest,
+        (),
+    )?;
+    create_link(
+        AnyDhtHash::from(AgentPubKey::from(transaction_request.clone().get_counterparty()?)),
+        action_hash.clone(),
+        LinkTypes::AgentPubKeyToTransactionRequest,
+        (),
+    )?;
 
-    // Ok((header_hash.into(), transaction_request))
-    unimplemented!()
+    Ok((action_hash.into(), transaction_request))
 }
 
 #[hdk_extern]
@@ -210,44 +206,45 @@ fn query_my_transactions() -> ExternResult<BTreeMap<ActionHashB64, Transaction>>
     Ok(my_transactions)
 }
 
-// #[hdk_extern]
-// pub fn get_my_transaction_requests(
-//     _: (),
-// ) -> ExternResult<BTreeMap<ActionHashB64, TransactionRequest>> {
-//     let my_pub_key = agent_info()?.agent_initial_pubkey;
-//     let links = get_links(my_pub_key.into(), None)?;
+#[hdk_extern]
+pub fn get_my_transaction_requests(
+    _: (),
+) -> ExternResult<BTreeMap<ActionHashB64, TransactionRequest>> {
+    let my_pub_key = agent_info()?.agent_initial_pubkey;
+    let links = get_links(my_pub_key, LinkTypes::AgentPubKeyToTransactionRequest, None)?;
 
-//     let get_inputs = links
-//         .into_iter()
-//         .map(|link| {
-//             GetInput::new(
-//                 link.target.retype(hash_type::Header).into(),
-//                 GetOptions::default(),
-//             )
-//         })
-//         .collect();
+    let get_inputs = links
+        .into_iter()
+        .map(|link| {
+            GetInput::new(
+                link.target.retype(hash_type::Action).into(),
+                GetOptions::default(),
+            )
+        })
+        .collect();
 
-//     let elements = HDK.with(|hdk| hdk.borrow().get(get_inputs))?;
+    let records = HDK.with(|hdk| hdk.borrow().get(get_inputs))?;
 
-//     let transaction_requests = elements
-//         .into_iter()
-//         .filter_map(|el| el)
-//         .map(|el| {
-//             let header_hash = ActionHashB64::from(el.header_address().clone());
+    let transaction_requests = records
+        .into_iter()
+        .filter_map(|el| el)
+        .map(|el| {
+            let action_hash = ActionHashB64::from(el.action_address().clone());
 
-//             let transaction_request: TransactionRequest =
-//                 el.entry()
-//                     .to_app_option()?
-//                     .ok_or(wasm_error!(String::from(
-//                         "Malformed transaction request",
-//                     )))?;
+            let transaction_request: TransactionRequest =
+                el.entry()
+                    .to_app_option()
+                    .unwrap()
+                    .ok_or(wasm_error!(WasmErrorInner::Guest(
+                        "Malformed transaction request".into()
+                    )))?;
 
-//             Ok((header_hash, transaction_request))
-//         })
-//         .collect::<ExternResult<BTreeMap<ActionHashB64, TransactionRequest>>>()?;
+            Ok((action_hash, transaction_request))
+        })
+        .collect::<ExternResult<BTreeMap<ActionHashB64, TransactionRequest>>>()?;
 
-//     Ok(transaction_requests)
-// }
+    Ok(transaction_requests)
+}
 
 fn get_chain_top(agent_pub_key: AgentPubKey) -> ExternResult<ActionHash> {
     let activity = get_agent_activity(
