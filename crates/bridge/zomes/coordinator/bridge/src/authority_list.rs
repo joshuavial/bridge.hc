@@ -1,6 +1,6 @@
 use hdk::prelude::*;
 use bridge_integrity::*;
-use types::*;
+use bridge_hc_types::*;
 
 #[hdk_extern]
 pub fn create_authority_list(authority_list: AuthorityList) -> ExternResult<Record> {

@@ -1,6 +1,6 @@
 use hdi::prelude::*;
 use super::properties::*;
-use types::*;
+use bridge_hc_types::*;
 
 pub fn validate_create_authority_list(
     action: EntryCreationAction,

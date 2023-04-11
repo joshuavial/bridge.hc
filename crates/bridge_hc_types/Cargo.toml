@@ -1,0 +1,17 @@
+[package]
+name = "bridge_hc_types"
+description = "Bridge.hc Holochain Types for use with multiple integrity zome happ"
+version = "0.1.0"
+edition = "2021"
+authors = ["nickstebbings", "n.stebbings@gmail.com", "joshuavial", ]
+rust-version = "1.56.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "bridge_hc_types"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+hdk = { workspace = true }
+serde = { workspace = true }

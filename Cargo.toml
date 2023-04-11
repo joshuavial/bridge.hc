@@ -30,5 +30,5 @@ path = "crates/bridge/zomes/coordinator/profiles"
 [workspace.dependencies.profiles_integrity]
 path = "crates/bridge/zomes/integrity/profiles"
 
-[workspace.dependencies.types]
-path = "crates/types"
+[workspace.dependencies.bridge_hc_types]
+path = "crates/bridge_hc_types"

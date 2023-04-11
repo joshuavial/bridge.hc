@@ -1,5 +1,5 @@
 use hdi::prelude::{*, holo_hash::ActionHashB64};
-use types::{Transaction, TransactionRequest};
+use bridge_hc_types::{Transaction, TransactionRequest};
 
 mod transaction;
 mod validation;

@@ -1,6 +1,6 @@
 use hdk::prelude::{*, holo_hash::ActionHashB64};
 
-use types::*;
+use bridge_hc_types::*;
 use crate::utils::records_to_transactions;
 
 use std::collections::BTreeMap;

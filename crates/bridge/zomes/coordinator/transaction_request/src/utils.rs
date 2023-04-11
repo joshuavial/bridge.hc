@@ -2,7 +2,7 @@ use hdk::prelude::*;
 use crate::holo_hash::{AgentPubKeyB64, AnyDhtHashB64};
 use serde::de::DeserializeOwned;
 
-use types::{Transaction, TransactionRequest};
+use bridge_hc_types::{Transaction, TransactionRequest};
 
 pub fn call_transactions<I, R>(fn_name: String, payload: I) -> ExternResult<R>
 where

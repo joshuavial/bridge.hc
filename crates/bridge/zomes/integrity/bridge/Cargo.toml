@@ -10,4 +10,4 @@ name = "bridge_integrity"
 [dependencies]
 hdi = { workspace = true }
 serde = { workspace = true }
-types = { workspace = true }
+bridge_hc_types = { workspace = true }

@@ -6,7 +6,7 @@ pub use properties::*;
 
 mod validation;
 
-use types::{ AuthorityList };
+use bridge_hc_types::{ AuthorityList };
 use hdi::prelude::*;
 
 #[derive(Serialize, Deserialize)]

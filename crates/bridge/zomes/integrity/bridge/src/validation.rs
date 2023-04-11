@@ -1,5 +1,5 @@
 use hdi::prelude::*;
-use types::*;
+use bridge_hc_types::*;
 use crate::{authority_list::*, EntryTypes};
 
 // Validation you perform during the genesis process. Nobody else on the network performs it, only you.

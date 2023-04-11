@@ -14,4 +14,4 @@ serde = { workspace = true }
 
 bridge_integrity = { workspace = true } 
 
-types = { workspace = true } 
+bridge_hc_types = { workspace = true } 
