@@ -81,7 +81,7 @@ pub fn accept_transaction_request(
     let transaction_request: TransactionRequest = transaction_request_record
         .entry()
         .to_app_option()
-        .unwrap()
+        .map_err(|e| wasm_error!(e))?
         .ok_or(wasm_error!(String::from(
             "Malformed transaction request",
         )))?;
@@ -238,7 +238,7 @@ pub fn get_my_transaction_requests(
             let transaction_request: TransactionRequest =
                 el.entry()
                     .to_app_option()
-                    .unwrap()
+                    .map_err(|e| wasm_error!(e))?
                     .ok_or(wasm_error!(WasmErrorInner::Guest(
                         "Malformed transaction request".into()
                     )))?;

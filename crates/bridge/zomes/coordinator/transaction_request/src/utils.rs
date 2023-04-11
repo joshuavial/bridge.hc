@@ -11,7 +11,7 @@ where
 {
     let response = call(
         CallTargetCell::Local,
-        ZomeName::from("bridge".to_string()),
+        ZomeName::from("transactions".to_string()),
         fn_name.into(),
         None,
         payload,
@@ -39,7 +39,7 @@ pub fn build_transaction(transaction_request_record: Record) -> ExternResult<Tra
     let transaction_request: TransactionRequest = transaction_request_record
         .entry()
         .to_app_option()
-        .unwrap()
+        .map_err(|e| wasm_error!(e))?
         .ok_or(wasm_error!(String::from("Malformed transaction_request",)))?;
 
     let spender = transaction_request.spender_pub_key.clone();
