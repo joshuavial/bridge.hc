@@ -5,7 +5,7 @@ opt-level = "z"
 opt-level = "z"
 
 [workspace]
-members = ["dnas/*/zomes/coordinator/*", "dnas/*/zomes/integrity/*"]
+members = ["crates/*/zomes/coordinator/*", "crates/*/zomes/integrity/*"]
 
 [workspace.dependencies]
 hdi = "=0.2.1"
@@ -13,22 +13,22 @@ hdk = "=0.1.1"
 serde = "1"
 
 [workspace.dependencies.bridge]
-path = "dnas/bridge/zomes/coordinator/bridge"
+path = "crates/bridge/zomes/coordinator/bridge"
 
 [workspace.dependencies.bridge_integrity]
-path = "dnas/bridge/zomes/integrity/bridge"
+path = "crates/bridge/zomes/integrity/bridge"
 
 [workspace.dependencies.transaction_requests]
-path = "dnas/bridge/zomes/coordinator/transaction_request"
+path = "crates/bridge/zomes/coordinator/transaction_request"
 
 [workspace.dependencies.transaction_requests_integrity]
-path = "dnas/bridge/zomes/integrity/transaction_request"
+path = "crates/bridge/zomes/integrity/transaction_request"
 
 [workspace.dependencies.profiles]
-path = "dnas/bridge/zomes/coordinator/profiles"
+path = "crates/bridge/zomes/coordinator/profiles"
 
 [workspace.dependencies.profiles_integrity]
-path = "dnas/bridge/zomes/integrity/profiles"
+path = "crates/bridge/zomes/integrity/profiles"
 
 [workspace.dependencies.types]
-path = "dnas/types"
+path = "crates/types"
