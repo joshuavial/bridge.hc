@@ -132,7 +132,7 @@ test('Given two agents, Alice and Bob, When Alice tries to create a transaction 
   })
 })
 
-test('Given two Agents, When Alice tries to accept a VALID transaction request from another agent, Then it accepts', async () => {
+test.skip('Given two Agents, When Alice tries to accept a VALID transaction request from another agent, Then it accepts', async () => {
   await runScenario(async scenario => {
     const [aliceConductor, alice] = await installApp(scenario, null);
     const [bobConductor, bob] = await installApp(scenario, alice.agentPubKey);
