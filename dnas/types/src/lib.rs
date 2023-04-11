@@ -85,8 +85,8 @@ impl Transaction {
     pub fn from_previous_transactions(
         _spender: AgentPubKey,
         _recipient: AgentPubKey,
-        _previous_spender_transaction: Option<(ActionHashB64, Transaction)>,
-        _previous_recipient_transaction: Option<(ActionHashB64, Transaction)>,
+        _previous_spender_transaction: Option<(AnyDhtHashB64, Transaction)>,
+        _previous_recipient_transaction: Option<(AnyDhtHashB64, Transaction)>,
         _amount: f64,
         _info: SerializedBytes,
     ) -> ExternResult<Transaction> {
@@ -165,6 +165,13 @@ pub struct CreateTransactionRequestInput {
     pub transaction_request_type: TransactionRequestType,
     pub counterparty_pub_key: AgentPubKeyB64,
     pub amount: f64,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename_all = "camelCase")]
+pub struct AttemptCreateTransactionInput {
+    pub transaction: Transaction,
+    pub counterparty_chain_top: ActionHashB64,
 }
 
 #[derive(Debug, Serialize, Deserialize, SerializedBytes, Clone, PartialEq)]

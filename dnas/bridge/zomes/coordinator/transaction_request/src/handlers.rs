@@ -5,6 +5,8 @@ use types::*;
 
 use std::collections::BTreeMap;
 
+use crate::utils::{build_transaction, call_transactions};
+
 #[hdk_extern]
 pub fn create_transaction_request(
     input: CreateTransactionRequestInput,
@@ -68,36 +70,36 @@ pub fn clear_transaction_request(_transaction_request_hash: ActionHashB64) -> Ex
 pub fn accept_transaction_request(
     transaction_request_hash: ActionHashB64,
 ) -> ExternResult<(ActionHashB64, Transaction)> {
-    // let transaction_request_element = get(
-    //     ActionHash::from(transaction_request_hash.clone()),
-    //     GetOptions::default(),
-    // )?
-    // .ok_or(wasm_error!(String::from(
-    //     "Couldn't get transaction request",
-    // )))?;
+    let transaction_request_record = get(
+        ActionHash::from(transaction_request_hash.clone()),
+        GetOptions::default(),
+    )?
+    .ok_or(wasm_error!(String::from(
+        "Couldn't get transaction request",
+    )))?;
 
-    // let transaction_request: TransactionRequest = transaction_request_element
-    //     .entry()
-    //     .to_app_option()?
-    //     .ok_or(wasm_error!(String::from(
-    //         "Malformed transaction request",
-    //     )))?;
-    // let counterparty = transaction_request.get_counterparty()?;
+    let transaction_request: TransactionRequest = transaction_request_record
+        .entry()
+        .to_app_option()
+        .unwrap()
+        .ok_or(wasm_error!(String::from(
+            "Malformed transaction request",
+        )))?;
+    let counterparty = transaction_request.get_counterparty()?;
 
-    // let counterparty_chain_top = get_chain_top(counterparty.into())?;
+    let counterparty_chain_top = get_chain_top(counterparty.into())?;
 
-    // let transaction = build_transaction(transaction_request_element)?;
+    let transaction = build_transaction(transaction_request_record)?;
 
-    // let result: (ActionHashB64, Transaction) = call_transactions(
-    //     "attempt_create_transaction".into(),
-    //     AttemptCreateTransactionInput {
-    //         transaction,
-    //         counterparty_chain_top: counterparty_chain_top.into(),
-    //     },
-    // )?;
+    let result: (ActionHashB64, Transaction) = call_transactions(
+        "attempt_create_transaction".into(),
+        AttemptCreateTransactionInput {
+            transaction,
+            counterparty_chain_top: counterparty_chain_top.into(),
+        },
+    )?;
 
-    // Ok(result)
-    unimplemented!()
+    Ok(result)
 }
 
 // #[hdk_extern(infallible)]
