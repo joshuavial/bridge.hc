@@ -1,18 +1,18 @@
 import { assert, test } from "vitest";
 
-import { runScenario} from '@holochain/tryorama';
+import { pause, runScenario} from '@holochain/tryorama';
 import { ActionHash, AgentPubKeyB64, Record, } from '@holochain/client';
 import { decode } from '@msgpack/msgpack';
 
 import {installApp} from './utils.js';
 
 enum TransactionRequestType {
-    Send,
-    Receive
+    Send = "Send",
+    Receive = "Receive"
 }
 
 interface CreateTransactionRequestInput {
-    transactionRequestType: String, //TransactionRequestType
+    transactionRequestType: TransactionRequestType,
     counterpartyPubKey: AgentPubKeyB64,
     amount: Number,
 }
@@ -35,16 +35,16 @@ test('Given an agent, Alice, When Alice tries to create a transaction request to
       payload: null,
     });
 
-    // const transactionList: any = await aliceConductor.appAgentWs().callZome({
-    //   role_name: "bridge",
-    //   zome_name: "bridge",
-    //   fn_name: "query_my_transactions",
-    //   payload: null,
-    // });
-    // assert.equal(transactionList.length, 0);
+    const transactionList: any = await aliceConductor.appAgentWs().callZome({
+      role_name: "bridge",
+      zome_name: "transaction_requests",
+      fn_name: "get_my_transaction_requests",
+      payload: null,
+    });
+    assert.equal(Object.keys(transactionList).length, 0);
 
     let transactionRequestInput : CreateTransactionRequestInput = {
-        transactionRequestType: "Send", // TODO: fix error serializing enums
+        transactionRequestType: TransactionRequestType.Send,
         counterpartyPubKey: (alice.agentPubKey as unknown) as AgentPubKeyB64,
         amount: 10.0,
     };
@@ -63,60 +63,176 @@ test('Given an agent, Alice, When Alice tries to create a transaction request to
         assert.ok(1);
       }
 
-    // const transactionListAfter: any = await aliceConductor.appAgentWs().callZome({
-    //   role_name: "bridge",
-    //   zome_name: "bridge",
-    //   fn_name: "query_my_transactions",
-    //   payload: null,
-    // });
-    // assert.equal(transactionListAfter.length, 0);
+    const transactionListAfter: any = await aliceConductor.appAgentWs().callZome({
+      role_name: "bridge",
+      zome_name: "transaction_requests",
+      fn_name: "get_my_transaction_requests",
+      payload: null,
+    });
+    assert.equal(Object.keys(transactionListAfter).length, 0);
   });
 });
 
-test.skip('Given an agent, Alice, When Alice tries to create a transaction request to herself, Then it fails', async () => {
-  await runScenario(async scenario => {
-    const [aliceConductor, alice] = await installApp(scenario, null, 51);
-
-    try {
-      const forceInit: Record = await aliceConductor.appAgentWs().callZome({
-        role_name: "bridge",
-        zome_name: "bridge",
-        fn_name: "whoami",
-        payload: null,
-      });
-    }
-    catch (e) {
-      console.log(e)
-      assert.ok(1);
-    }
-
-  })
-})
-
-test.skip('Given two agents, Alice and Bob, When Alice tries to create a transaction request to Bob, Then it sends', async () => {
+test('Given two agents, Alice and Bob, When Alice tries to create a transaction request to Bob, Then it creates a transaction request for Alice', async () => {
   await runScenario(async scenario => {
     const [aliceConductor, alice] = await installApp(scenario, null);
     const [bobConductor, bob] = await installApp(scenario, alice.agentPubKey);
 
-    const forceInit: Record = await bobConductor.appAgentWs().callZome({
+    const forceInit: any = await aliceConductor.appAgentWs().callZome({
       role_name: "bridge",
       zome_name: "bridge",
       fn_name: "whoami",
       payload: null,
     });
 
+    const transactionList: any = await aliceConductor.appAgentWs().callZome({
+      role_name: "bridge",
+      zome_name: "transaction_requests",
+      fn_name: "get_my_transaction_requests",
+      payload: null,
+    });
+    assert.equal(Object.keys(transactionList).length, 0);
+
+    let transactionRequestInput : CreateTransactionRequestInput = {
+        transactionRequestType: TransactionRequestType.Send,
+        counterpartyPubKey: (bob.agentPubKey as unknown) as AgentPubKeyB64,
+        amount: 10.0,
+    };
     try {
-      const authorityList: Record = await bobConductor.appAgentWs().callZome({
+        const attemptCreateRequest: any = await aliceConductor.appAgentWs().callZome({
+            role_name: "bridge",
+            zome_name: "transaction_requests",
+            fn_name: "create_transaction_request",
+            payload: transactionRequestInput,
+        });
+        assert.ok(1)
+      }
+      catch (e) {
+        console.log(e)
+      }
+
+      // Wait for the updated entry to be propagated to the other node.
+      await pause(1200);
+
+      const transactionListAliceAfter: any = await aliceConductor.appAgentWs().callZome({
         role_name: "bridge",
-        zome_name: "bridge",
-        fn_name: "get_authority_list",
+        zome_name: "transaction_requests",
+        fn_name: "get_my_transaction_requests",
         payload: null,
       });
-      assert.fail();
-    }
-    catch (e) {
-      assert.ok(1);
-    }
+      assert.equal(Object.keys(transactionListAliceAfter).length, 1);
 
+      const transactionListBobAfter: any = await bobConductor.appAgentWs().callZome({
+        role_name: "bridge",
+        zome_name: "transaction_requests",
+        fn_name: "get_my_transaction_requests",
+        payload: null,
+      });
+      assert.equal(Object.keys(transactionListBobAfter).length, 0);
   })
 })
+
+test.skip('Given two Agents, When Alice tries to accept a VALID transaction request from another agent, Then it accepts', async () => {
+  await runScenario(async scenario => {
+    const [aliceConductor, alice] = await installApp(scenario, null);
+    const [bobConductor, bob] = await installApp(scenario, alice.agentPubKey);
+
+    const forceInit: any = await aliceConductor.appAgentWs().callZome({
+      role_name: "bridge",
+      zome_name: "bridge",
+      fn_name: "whoami",
+      payload: null,
+    });
+
+    let transactionRequestInput : CreateTransactionRequestInput = {
+        transactionRequestType: TransactionRequestType.Send,
+        counterpartyPubKey: (bob.agentPubKey as unknown) as AgentPubKeyB64,
+        amount: 10.0,
+    };
+    try {
+        const attemptCreateRequest: any = await aliceConductor.appAgentWs().callZome({
+            role_name: "bridge",
+            zome_name: "transaction_requests",
+            fn_name: "create_transaction_request",
+            payload: transactionRequestInput,
+        });
+        assert.ok(1)
+
+        // Wait for the updated entry to be propagated to the other node.
+        await pause(1200);
+
+        const acceptCreatedRequest: any = await aliceConductor.appAgentWs().callZome({
+            role_name: "bridge",
+            zome_name: "transaction_requests",
+            fn_name: "accept_transaction_request",
+            payload: transactionRequestInput,
+        });
+        assert.ok(1)
+      }
+      catch (e) {
+        console.log(e)
+      }
+
+      // Wait for the updated entry to be propagated to the other node.
+      await pause(1200);
+
+      const transactionListAliceAfter: any = await aliceConductor.appAgentWs().callZome({
+        role_name: "bridge",
+        zome_name: "transaction_requests",
+        fn_name: "get_my_transaction_requests",
+        payload: null,
+      });
+      assert.fail(Object.keys(transactionListAliceAfter)[0]);
+
+  })
+});
+
+test.skip('Given an agent, Alice, When Alice tries to create a transaction request to herself, Then it fails (TEMPLATE)', async () => {
+  await runScenario(async scenario => {
+
+    const [aliceConductor, alice] = await installApp(scenario, null);
+
+    const forceInit: any = await aliceConductor.appAgentWs().callZome({
+      role_name: "bridge",
+      zome_name: "bridge",
+      fn_name: "whoami",
+      payload: null,
+    });
+
+    const transactionList: any = await aliceConductor.appAgentWs().callZome({
+      role_name: "bridge",
+      zome_name: "bridge",
+      fn_name: "query_my_transactions",
+      payload: null,
+    });
+    assert.equal(Object.keys(transactionList).length, 0);
+
+    let transactionRequestInput : CreateTransactionRequestInput = {
+        transactionRequestType: TransactionRequestType.Send,
+        counterpartyPubKey: (alice.agentPubKey as unknown) as AgentPubKeyB64,
+        amount: 10.0,
+    };
+    try {
+        const attemptCreateRequest: any = await aliceConductor.appAgentWs().callZome({
+            role_name: "bridge",
+            zome_name: "transaction_requests",
+            fn_name: "create_transaction_request",
+            payload: transactionRequestInput,
+        });
+
+        assert.fail();
+      }
+      catch (e) {
+        console.log(e)
+        assert.ok(1);
+      }
+
+    const transactionListAfter: any = await aliceConductor.appAgentWs().callZome({
+      role_name: "bridge",
+      zome_name: "transaction_requests",
+      fn_name: "get_my_transaction_requests",
+      payload: null,
+    });
+    assert.equal(Object.keys(transactionListAfter).length, 0);
+  });
+});

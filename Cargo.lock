@@ -139,7 +139,16 @@ dependencies = [
 name = "bridge"
 version = "0.0.1"
 dependencies = [
+ "bridge_hc_types",
  "bridge_integrity",
+ "hdk",
+ "serde",
+]
+
+[[package]]
+name = "bridge_hc_types"
+version = "0.1.0"
+dependencies = [
  "hdk",
  "serde",
 ]
@@ -148,8 +157,8 @@ dependencies = [
 name = "bridge_integrity"
 version = "0.0.1"
 dependencies = [
+ "bridge_hc_types",
  "hdi",
- "hdk",
  "serde",
 ]
 
@@ -1864,7 +1873,7 @@ dependencies = [
 name = "transaction_requests"
 version = "0.0.1"
 dependencies = [
- "bridge_integrity",
+ "bridge_hc_types",
  "hdk",
  "serde",
  "transaction_requests_integrity",
@@ -1874,9 +1883,8 @@ dependencies = [
 name = "transaction_requests_integrity"
 version = "0.0.1"
 dependencies = [
- "bridge_integrity",
+ "bridge_hc_types",
  "hdi",
- "hdk",
  "serde",
 ]
 
