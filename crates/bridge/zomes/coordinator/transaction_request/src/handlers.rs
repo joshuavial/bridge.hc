@@ -189,7 +189,7 @@ pub fn accept_transaction_request(
 fn query_my_transactions() -> ExternResult<BTreeMap<ActionHashB64, Transaction>> {
     let response = call_remote(
         agent_info().unwrap().agent_initial_pubkey,
-        ZomeName::from("transaction_requests".to_string()),
+        ZomeName::from("transactions".to_string()),
         "query_my_transactions".into(),
         None,
         (),
