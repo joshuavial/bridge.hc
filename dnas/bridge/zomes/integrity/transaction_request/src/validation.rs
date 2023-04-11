@@ -90,9 +90,7 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
             target_address: _,
             tag: _,
             action: _,
-        } => Ok(ValidateCallbackResult::Invalid(String::from(
-            "There are no link types in this integrity zome",
-        ))),
+        } =>Ok(ValidateCallbackResult::Valid),
         OpType::RegisterDeleteLink {
             link_type: _,
             base_address: _,
@@ -100,9 +98,7 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
             tag: _,
             original_action: _,
             action: _,
-        } => Ok(ValidateCallbackResult::Invalid(String::from(
-            "There are no link types in this integrity zome",
-        ))),
+        } => Ok(ValidateCallbackResult::Valid),
         OpType::StoreRecord(store_record) => {
             match store_record {
                 // Complementary validation to the `StoreEntry` Op, in which the record itself is validated
@@ -218,9 +214,7 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                     tag: _,
                     link_type: _,
                     action: _,
-                } => Ok(ValidateCallbackResult::Invalid(
-                    "There are no link types in this integrity zome".to_string(),
-                )),
+                } => Ok(ValidateCallbackResult::Valid),
                 // Complementary validation to the `RegisterDeleteLink` Op, in which the record itself is validated
                 // If you want to optimize performance, you can remove the validation for an entry type here and keep it in `RegisterDeleteLink`
                 // Notice that doing so will cause `must_get_valid_record` for this record to return a valid record even if the `RegisterDeleteLink` validation failed
@@ -228,9 +222,7 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                     original_action_hash: _,
                     base_address: _,
                     action: _,
-                } => Ok(ValidateCallbackResult::Invalid(
-                    "There are no link types in this integrity zome".to_string(),
-                )),
+                } => Ok(ValidateCallbackResult::Valid),
                 OpRecord::CreatePrivateEntry { .. } => Ok(ValidateCallbackResult::Valid),
                 OpRecord::UpdatePrivateEntry { .. } => Ok(ValidateCallbackResult::Valid),
                 OpRecord::CreateCapClaim { .. } => Ok(ValidateCallbackResult::Valid),

@@ -10,13 +10,12 @@ pub fn create_transaction_request(
     input: CreateTransactionRequestInput,
 ) -> ExternResult<(ActionHashB64, TransactionRequest)> {
     let my_pub_key = agent_info()?.agent_latest_pubkey;
-    warn!("{:?}", my_pub_key.clone());
     if AgentPubKey::from(input.counterparty_pub_key.clone()).eq(&my_pub_key) {
         return Err(wasm_error!(String::from(
             "An agent cannot create an offer to themselves",
         )));
     }
-
+    
     let transaction_request = match input.transaction_request_type {
         TransactionRequestType::Send => TransactionRequest {
             spender_pub_key: AgentPubKeyB64::from(my_pub_key.clone()),
@@ -29,8 +28,9 @@ pub fn create_transaction_request(
             amount: input.amount,
         },
     };
-
+    
     let action_hash = create_entry(EntryTypes::TransactionRequest(transaction_request.clone()))?;
+    warn!("{:?}", action_hash.clone());
 
     create_link(
         AnyDhtHash::from(my_pub_key),
@@ -45,6 +45,7 @@ pub fn create_transaction_request(
         (),
     )?;
 
+    warn!("RESULT {:#?}", ((action_hash.clone(), transaction_request.clone())));
     Ok((action_hash.into(), transaction_request))
 }
 
