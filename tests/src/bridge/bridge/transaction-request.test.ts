@@ -132,6 +132,60 @@ test('Given two agents, Alice and Bob, When Alice tries to create a transaction 
   })
 })
 
+test('Given two Agents, When Alice tries to accept a VALID transaction request from another agent, Then it accepts', async () => {
+  await runScenario(async scenario => {
+    const [aliceConductor, alice] = await installApp(scenario, null);
+    const [bobConductor, bob] = await installApp(scenario, alice.agentPubKey);
+
+    const forceInit: any = await aliceConductor.appAgentWs().callZome({
+      role_name: "bridge",
+      zome_name: "bridge",
+      fn_name: "whoami",
+      payload: null,
+    });
+
+    let transactionRequestInput : CreateTransactionRequestInput = {
+        transactionRequestType: TransactionRequestType.Send,
+        counterpartyPubKey: (bob.agentPubKey as unknown) as AgentPubKeyB64,
+        amount: 10.0,
+    };
+    try {
+        const attemptCreateRequest: any = await aliceConductor.appAgentWs().callZome({
+            role_name: "bridge",
+            zome_name: "transaction_requests",
+            fn_name: "create_transaction_request",
+            payload: transactionRequestInput,
+        });
+        assert.ok(1)
+
+        // Wait for the updated entry to be propagated to the other node.
+        await pause(1200);
+
+        const acceptCreatedRequest: any = await aliceConductor.appAgentWs().callZome({
+            role_name: "bridge",
+            zome_name: "transaction_requests",
+            fn_name: "accept_transaction_request",
+            payload: transactionRequestInput,
+        });
+        assert.ok(1)
+      }
+      catch (e) {
+        console.log(e)
+      }
+
+      // Wait for the updated entry to be propagated to the other node.
+      await pause(1200);
+
+      const transactionListAliceAfter: any = await aliceConductor.appAgentWs().callZome({
+        role_name: "bridge",
+        zome_name: "transaction_requests",
+        fn_name: "get_my_transaction_requests",
+        payload: null,
+      });
+      assert.fail(Object.keys(transactionListAliceAfter)[0]);
+
+  })
+});
 
 test.skip('Given an agent, Alice, When Alice tries to create a transaction request to herself, Then it fails (TEMPLATE)', async () => {
   await runScenario(async scenario => {
