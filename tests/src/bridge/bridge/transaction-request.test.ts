@@ -1,6 +1,6 @@
 import { assert, test } from "vitest";
 
-import { runScenario} from '@holochain/tryorama';
+import { pause, runScenario} from '@holochain/tryorama';
 import { ActionHash, AgentPubKeyB64, Record, } from '@holochain/client';
 import { decode } from '@msgpack/msgpack';
 
@@ -110,6 +110,9 @@ test('Given two agents, Alice and Bob, When Alice tries to create a transaction 
       catch (e) {
         console.log(e)
       }
+
+      // Wait for the updated entry to be propagated to the other node.
+      await pause(1200);
 
       const transactionListAliceAfter: any = await aliceConductor.appAgentWs().callZome({
         role_name: "bridge",
