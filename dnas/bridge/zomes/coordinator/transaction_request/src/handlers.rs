@@ -1,6 +1,6 @@
 use hdk::prelude::{*, holo_hash::*};
 
-use bridge_integrity::{EntryTypes, LinkTypes};
+use transaction_requests_integrity::{EntryTypes, LinkTypes};
 use types::*;
 
 use std::collections::BTreeMap;

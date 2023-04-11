@@ -1,6 +1,6 @@
 use hdi::prelude::*;
 use types::*;
-use crate::{authority_list::*, EntryTypes};
+use crate::{ EntryTypes, transaction::* };
 
 // Validation you perform during the genesis process. Nobody else on the network performs it, only you.
 // There *is no* access to network calls in this callback
@@ -41,18 +41,18 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
     match op.to_type::<EntryTypes, ()>()? {
         OpType::StoreEntry(store_entry) => match store_entry {
             OpEntry::CreateEntry { app_entry, action } => match app_entry {
-                EntryTypes::AuthorityList(authority_list) => validate_create_authority_list(
-                    EntryCreationAction::Create(action),
-                    authority_list,
-                ),
+                EntryTypes::Transaction(transaction) => {
+                    validate_create_transaction(EntryCreationAction::Create(action), transaction)
+                },
+                _ => Ok(ValidateCallbackResult::Valid),
             },
             OpEntry::UpdateEntry {
                 app_entry, action, ..
             } => match app_entry {
-                EntryTypes::AuthorityList(authority_list) => validate_create_authority_list(
-                    EntryCreationAction::Update(action),
-                    authority_list,
-                ),
+                EntryTypes::Transaction(transaction) => {
+                    validate_create_transaction(EntryCreationAction::Update(action), transaction)
+                },
+                _ => Ok(ValidateCallbackResult::Valid),
             },
             _ => Ok(ValidateCallbackResult::Valid),
         },
@@ -63,15 +63,10 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                 app_entry,
                 action,
             } => match (app_entry, original_app_entry) {
-                (
-                    EntryTypes::AuthorityList(authority_list),
-                    EntryTypes::AuthorityList(original_authority_list),
-                ) => validate_update_authority_list(
-                    action,
-                    authority_list,
-                    original_action,
-                    original_authority_list,
-                ),
+
+                _ => Ok(ValidateCallbackResult::Invalid(
+                    "Original and updated entry types must be the same".to_string(),
+                )),
             },
             _ => Ok(ValidateCallbackResult::Valid),
         },
@@ -81,9 +76,11 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                 original_app_entry,
                 action,
             } => match original_app_entry {
-                EntryTypes::AuthorityList(authority_list) => {
-                    validate_delete_authority_list(action, original_action, authority_list)
-                }
+
+                EntryTypes::Transaction(transaction) => {
+                    validate_delete_transaction(action, original_action, transaction)
+                },
+                _ => Ok(ValidateCallbackResult::Valid),
             },
             _ => Ok(ValidateCallbackResult::Valid),
         },
@@ -112,10 +109,12 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                 // If you want to optimize performance, you can remove the validation for an entry type here and keep it in `StoreEntry`
                 // Notice that doing so will cause `must_get_valid_record` for this record to return a valid record even if the `StoreEntry` validation failed
                 OpRecord::CreateEntry { app_entry, action } => match app_entry {
-                    EntryTypes::AuthorityList(authority_list) => validate_create_authority_list(
+
+                    EntryTypes::Transaction(transaction) => validate_create_transaction(
                         EntryCreationAction::Create(action),
-                        authority_list,
-                    )
+                        transaction,
+                    ),
+                    _ => Ok(ValidateCallbackResult::Valid),
                 },
                 // Complementary validation to the `RegisterUpdate` Op, in which the record itself is validated
                 // If you want to optimize performance, you can remove the validation for an entry type here and keep it in `StoreEntry` and in `RegisterUpdate`
@@ -139,38 +138,8 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                         }
                     };
                     match app_entry {
-                        EntryTypes::AuthorityList(authority_list) => {
-                            let result = validate_create_authority_list(
-                                EntryCreationAction::Update(action.clone()),
-                                authority_list.clone(),
-                            )?;
-                            if let ValidateCallbackResult::Valid = result {
-                                let original_authority_list: Option<AuthorityList> =
-                                    original_record
-                                        .entry()
-                                        .to_app_option()
-                                        .map_err(|e| wasm_error!(e))?;
-                                let original_authority_list = match original_authority_list {
-                                    Some(authority_list) => authority_list,
-                                    None => {
-                                        return Ok(
-                                            ValidateCallbackResult::Invalid(
-                                                "The updated entry type must be the same as the original entry type"
-                                                    .to_string(),
-                                            ),
-                                        );
-                                    }
-                                };
-                                validate_update_authority_list(
-                                    action,
-                                    authority_list,
-                                    original_action,
-                                    original_authority_list,
-                                )
-                            } else {
-                                Ok(result)
-                            }
-                        }
+                        EntryTypes::Transaction(_transaction) => Ok(ValidateCallbackResult::Valid),
+                        _ => Ok(ValidateCallbackResult::Valid)
                     }
                 }
                 // Complementary validation to the `RegisterDelete` Op, in which the record itself is validated
@@ -230,13 +199,14 @@ pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
                         }
                     };
                     match original_app_entry {
-                        EntryTypes::AuthorityList(original_authority_list) => {
-                            validate_delete_authority_list(
+                        EntryTypes::Transaction(original_transaction) => {
+                            validate_delete_transaction(
                                 action,
                                 original_action,
-                                original_authority_list,
+                                original_transaction,
                             )
-                        }
+                        },
+                        _ => Ok(ValidateCallbackResult::Valid),
                     }
                 }
                 // Complementary validation to the `RegisterCreateLink` Op, in which the record itself is validated

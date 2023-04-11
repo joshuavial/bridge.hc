@@ -1,14 +1,13 @@
 [package]
 edition = "2021"
-name = "transaction_requests"
+name = "transaction_requests_integrity"
 version = "0.0.1"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
-name = "transaction_requests"
+name = "transaction_requests_integrity"
 
 [dependencies]
-hdk = { workspace = true }
+hdi = { workspace = true }
 serde = { workspace = true }
-transaction_requests_integrity = { workspace = true }
 types = { workspace = true }
