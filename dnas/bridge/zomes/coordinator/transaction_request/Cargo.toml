@@ -12,4 +12,3 @@ hdk = { workspace = true }
 serde = { workspace = true }
 bridge_integrity = { workspace = true }
 types = { workspace = true }
-transaction_requests_integrity = {path = "../../integrity/transaction_request"}

@@ -13,3 +13,5 @@ hdk = { workspace = true }
 serde = { workspace = true }
 
 bridge_integrity = { workspace = true } 
+
+types = { workspace = true } 

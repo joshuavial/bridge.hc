@@ -21,9 +21,6 @@ path = "dnas/bridge/zomes/integrity/bridge"
 [workspace.dependencies.transaction_requests]
 path = "dnas/bridge/zomes/coordinator/transaction_request"
 
-[workspace.dependencies.transaction_requests_integrity]
-path = "dnas/bridge/zomes/integrity/transaction_request"
-
 [workspace.dependencies.profiles]
 path = "dnas/bridge/zomes/coordinator/profiles"
 

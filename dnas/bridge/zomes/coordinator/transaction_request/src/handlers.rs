@@ -1,8 +1,9 @@
-use std::collections::BTreeMap;
-
-use types::{Transaction};
 use hdk::prelude::{*, holo_hash::*};
-use transaction_requests_integrity::{CreateTransactionRequestInput, TransactionRequest, TransactionRequestType};
+
+use bridge_integrity::{EntryTypes, LinkTypes};
+use types::*;
+
+use std::collections::BTreeMap;
 
 #[hdk_extern]
 pub fn create_transaction_request(

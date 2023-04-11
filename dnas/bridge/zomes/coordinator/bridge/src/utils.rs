@@ -1,7 +1,9 @@
-use std::collections::BTreeMap;
-
 use hdk::prelude::{*, holo_hash::ActionHashB64};
-use bridge_integrity::*;
+
+use types::*;
+use crate::properties::*;
+
+use std::collections::BTreeMap;
 
 //TODO remove - practice writing modules
 pub fn get_progenitor_pub_key() -> ExternResult<AgentPubKey> {

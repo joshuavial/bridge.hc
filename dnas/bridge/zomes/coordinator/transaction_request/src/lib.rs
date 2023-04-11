@@ -1,7 +1,5 @@
 use hdk::prelude::*;
 
-use transaction_requests_integrity::*;
-
 mod handlers;
 mod utils;
 

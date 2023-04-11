@@ -1,6 +1,5 @@
+use hdi::prelude::*;
 use types::*;
-use hdk::prelude::*;
-
 
 fn _balance_from_previous_transaction(
     for_agent: AgentPubKey,

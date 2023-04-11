@@ -1,4 +1,4 @@
-use hdk::prelude::*;
+use hdi::prelude::*;
 use types::*;
 use crate::{transaction::*, authority_list::*, EntryTypes};
 

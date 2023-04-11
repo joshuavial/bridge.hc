@@ -1,7 +1,40 @@
-use crate::holo_hash::{AgentPubKeyB64, AnyDhtHashB64};
-use types::Transaction;
 use hdk::prelude::*;
-use transaction_requests_integrity::{call_transactions, TransactionRequest};
+use crate::holo_hash::{AgentPubKeyB64, AnyDhtHashB64};
+use serde::de::DeserializeOwned;
+
+use types::Transaction;
+
+pub fn call_transactions<I, R>(fn_name: String, payload: I) -> ExternResult<R>
+where
+    I: serde::Serialize + std::fmt::Debug,
+    R: serde::Serialize + std::fmt::Debug + DeserializeOwned,
+{
+    unimplemented!()
+    // let response = call(
+    //     CallTargetCell::Local,
+    //     "transactions".into(),
+    //     fn_name.into(),
+    //     None,
+    //     payload,
+    // )?;
+
+    // let result = match response {
+    //     ZomeCallResponse::Ok(result) => Ok(result),
+    //     _ => Err(wasm_error!(format!(
+    //         "Error creating the transaction: {:?}",
+    //         response
+    //     ))),
+    // }?;
+
+    // let transaction_hash: R = result.decode().map_err(|_| {
+    //     wasm_error!(WasmErrorInner::Guest(
+    //         "Error decoding transaction hash".into()
+    //     ))
+    // })?;
+
+    // Ok(transaction_hash)
+}
+
 
 pub fn build_transaction(transaction_request_element: Record) -> ExternResult<Transaction> {
     // let transaction_request: TransactionRequest = transaction_request_element

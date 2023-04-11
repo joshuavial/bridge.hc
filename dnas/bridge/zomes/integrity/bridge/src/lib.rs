@@ -21,3 +21,8 @@ pub enum EntryTypes {
     Transaction(Transaction),
     TransactionRequest(TransactionRequest),
 }
+
+#[hdk_link_types]
+pub enum LinkTypes {
+    AgentPubKeyToTransactionRequest
+}

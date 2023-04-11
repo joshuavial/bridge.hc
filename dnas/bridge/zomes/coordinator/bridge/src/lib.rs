@@ -2,8 +2,9 @@ pub mod transaction;
 pub mod authority_list;
 pub mod utils;
 
-use bridge_integrity::*;
 use hdk::prelude::*;
+use bridge_integrity::*;
+use types::*;
 
 // Called the first time a zome call is made to the cell containing this zome
 #[hdk_extern]

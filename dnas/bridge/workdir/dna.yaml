@@ -14,10 +14,6 @@ integrity:
       hash: ~
       bundled: "../../../target/wasm32-unknown-unknown/release/profiles_integrity.wasm"
       dependencies: ~
-    - name: transaction_requests_integrity
-      hash: ~
-      bundled: "../../../target/wasm32-unknown-unknown/release/transaction_requests_integrity.wasm"
-      dependencies: ~
 coordinator:
   zomes:
     - name: bridge
